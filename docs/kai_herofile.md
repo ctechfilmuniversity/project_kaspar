@@ -12,31 +12,33 @@
 
 
 ---
+
 * [k.ai](#kai)
     * [Working Document](#working-document)
     * [Change History](#change-history)
-    * [Overview](#overview)
-        * [What is k.ai?](#what-is-kai)
-        * [Vision \& Goals](#vision--goals)
-    * [Use Cases \& Scenarios](#use-cases--scenarios)
+* [Overview](#overview)
+    * [What is k.ai?](#what-is-kai)
+    * [Vision \& Goals](#vision--goals)
+    * [Usage Scenarios](#usage-scenarios)
         * [Live Rehearsal Improvisation](#live-rehearsal-improvisation)
         * [Optional Scenarios](#optional-scenarios)
     * [Behavioral Models](#behavioral-models)
-    * [System Architecture](#system-architecture)
-        * [Input / Output](#input--output)
-        * [Overview Processing Steps](#overview-processing-steps)
-        * [Modularisierung](#modularisierung)
-        * [Components](#components)
-            * [Preprocessing](#preprocessing)
-            * [Orchestration](#orchestration)
-            * [STT Module](#stt-module)
-            * [LLM Module](#llm-module)
-            * [TTS Module](#tts-module)
-            * [Visual Avatar Layer](#visual-avatar-layer)
-            * [Scene Storage \& File Management](#scene-storage--file-management)
+* [System Architecture](#system-architecture)
+    * [Input / Output](#input--output)
+    * [Overview Steps](#overview-steps)
+    * [Modularisierung](#modularisierung)
+    * [Components](#components)
+        * [Preprocessing](#preprocessing)
+        * [Orchestration](#orchestration)
+        * [STT Module](#stt-module)
+        * [LLM Module](#llm-module)
+            * [LLM Benchmarking Setup](#llm-benchmarking-setup)
+        * [TTS Module](#tts-module)
+        * [Visual Avatar Layer](#visual-avatar-layer)
+        * [Scene Storage \& File Management](#scene-storage--file-management)
     * [Design Decisions](#design-decisions)
-    * [Work Tracking](#work-tracking)
-        * [Current Focus](#current-focus)
+* [Work In Progress Tracking](#work-in-progress-tracking)
+        * [Active Tasks](#active-tasks)
         * [Backlog](#backlog)
         * [Done](#done)
     * [Open Questions](#open-questions)
@@ -45,17 +47,15 @@
     * [References \& Links](#references--links)
 
 
----
+# Overview
 
-## Overview
-
-### What is k.ai?
+## What is k.ai?
 
 K.ai is a real-time generative AI system built for theatrical rehearsal and improvisation. It serves as an interactive, non-human scene partner for actors. The system perceives audio and video from the rehearsal room, processes these signals through a multimodal pipeline, and responds with synthesized speech and a moving visual avatar, displayed, e.g. on a screen or projected. K.ai is not a simulated actor but a deliberately distorted entity and its errors and non-human deviations are the artistic material, not defects to be corrected. K.ai's specific behavior, and appearance can be shaped and mutated by the humans during rehearsal.
 
 K.ai is developed in the context the artistic-scientific research project [Kaspar 2028 - AI as a Theatrical Toolbox](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/image_and_space/detail/kaspar_2028.html), funded by the German Federal Cultural Foundation in the [Art & AI](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/film_and_new_media/detail/kunst_und_ki.html). Hand in hand with the experimentation with K.ai, we are going to produce a repertoire-ready stage production of Peter Handke's *Kaspar* at the Residenztheater in Munich, in May 2028.
 
-### Vision & Goals
+## Vision & Goals
 
 The K.ai system should include the following features:
 
@@ -77,13 +77,14 @@ K.ai is explicitly NOT:
 * A replacement for human creative development
 
 
----
 
-## Use Cases & Scenarios
+## Usage Scenarios
 
 ### Live Rehearsal Improvisation
 
-One performer enters a defined rehearsal space. K.ai, meaning the algorithmic avatar, is active. The performer speaks and moves and the K.ai system perceives the audio and video stream, processes input through its pipeline, and responds in real time. Human creatives can pre-configure K.ai's personality, behavioral rules, or visual mutation parameters or adjust them on the fly via an interface. Scenes are recorded for later use.
+* One performer enters a defined rehearsal space. K.ai, meaning the algorithmic avatar, is active. The performer speaks and moves and the system perceives the audio and video stream, processes input through its pipeline, and responds in real time.  
+* Human creatives can pre-configure the avatar's personality, behavioral rules, or visual mutation parameters or adjust them on the fly via an interface. 
+* Scenes are recorded (TODO: what is exactly recorded?).
 
 ### Optional Scenarios
 
@@ -93,18 +94,27 @@ One performer enters a defined rehearsal space. K.ai, meaning the algorithmic av
 
 ## Behavioral Models
 
-* Personality bundles: Predefined sets of behaviors (personality, mood, movement style, vocal character) that can be selected and switched at runtime. Examples: animalistic movement patterns, body-horror aesthetics, Stanislavski-style tempo-rhythm modulation.
-* Input-output relations: Mappings from perceived sensor signals to output behavior. Example: "the less the scene partner says, the more destroyed K.ai becomes". These relations are defined by the creative team.
-* Temporal design: Response delay as an expressive parameter, inspired by Stanislavski's concept of tempo-rhythm.
-* Mutation trajectory: K.ai starts with 1:1 mirroring of input and progressively diverges. Textual and visual instability is a core aesthetic goal — personality on thin ice.
+Personality bundles
+* Predefined sets of behaviors (personality, mood, movement style, vocal character) that can be selected and switched at runtime. 
+* Examples: animalistic movement patterns, body-horror aesthetics, Stanislavski-style tempo-rhythm modulation.
 
-Personality bundles are loaded via prompt configuration and should support rapid modification during active rehearsal by non-technical users.
+Input-output relations
+* Mappings from perceived sensor signals to output behavior. 
+* Example: "the less the scene partner says, the more destroyed K.ai becomes". 
+* These relations are pre-defined by the creative team.
+
+Temporal design
+* Response delay as an expressive parameter, inspired by Stanislavski's concept of tempo-rhythm.
+
+Mutation trajectory
+* K.ai starts with 1:1 mirroring of input and progressively diverges. Textual and visual instability is a core aesthetic goal.
 
 
----
-## System Architecture
 
-### Input / Output 
+
+# System Architecture
+
+## Input / Output 
 
 
 | Input Type              | Description                                                             |
@@ -123,11 +133,11 @@ The system should support both **direct input** (explicit speech directed at K.a
 | Visual avatar     | Video             | Display / Projection / LED wall                |
 | Scene recordings  | File (format TBD) | Archive for re-use on stage or as future input |
 
-### Overview Processing Steps
+## Overview Steps
 
 TODO:
 
-| Layer         | Description                                                                                  |
+| Step          | Description                                                                                  |
 | ------------- | -------------------------------------------------------------------------------------------- |
 | Preprocessing | Frame extraction from video stream; audio chunking                                           |
 | STT           | Speech-to-text transcription (Whisper / faster-whisper)                                      |
@@ -141,7 +151,7 @@ TODO:
 <img height="420" src="./img/overview.excalidraw.svg" class="pad">
 
 
-### Modularisierung
+## Modularisierung
 
 <img height="620" src="./img/modularization.excalidraw.svg" class="pad">
 
@@ -162,7 +172,9 @@ Orchestration across all segments is handled by **LiveKit Agents**.
 Each segment runs as an independent server. Inter-process communication via local network (WebSockets). This allows flexible distribution across multiple workstations and seamless fallback to hosted APIs (e.g. OpenAI Realtime API).
 
 
-### Components
+TODO:
+
+## Components
 
 Overview Tech Stack
 
@@ -180,13 +192,13 @@ Overview Tech Stack
 | Hardware          | Multiple workstations with dedicated GPUs        | One per segment                          |
 
 
-#### Preprocessing
+### Preprocessing
 
 * Frame extraction from video stream
 * Audio chunking for STT input
 * Future: additional sensing signals (motion data, proximity, tracking features for co-presence input)
 
-#### Orchestration
+### Orchestration
 
 **LiveKit Agents** manages the STT → LLM → TTS pipeline. Chosen for its native compatibility with this architecture and seamless OpenAI API compatibility.
 
@@ -196,7 +208,7 @@ Overview Tech Stack
 - nahtlose Kompatibilität mit `openai api`
 
 
-#### STT Module
+### STT Module
 
 - **Whisper** (via `faster-whisper` or `whisper-flow`)
 - May become obsolete if Gemma 4's native audio input is used directly — to be evaluated
@@ -208,7 +220,7 @@ Overview Tech Stack
 - Möglicherweise obsolet wenn Gemma 4 Audio Input genutzt werden kann
 
 
-#### LLM Module
+### LLM Module
 
 **Gemma 4** — selected for:
 - Multimodal input (audio/vision directly into the model)
@@ -236,7 +248,7 @@ Linux ?
 
 
 
-##### LLM Benchmarking Setup
+#### LLM Benchmarking Setup
 
 > Alle Benchmarks wurden innerhalb der folgenden Rahmen-Parameter durchgeführt
 
@@ -286,7 +298,7 @@ Ergebnisse
 
 
 
-#### TTS Module 
+### TTS Module 
 
 **Fish Audio S2 Pro** — voice cloning and synthesis.
 License currently unclear (research-use only), we asked about it but no response.
@@ -298,7 +310,7 @@ License currently unclear (research-use only), we asked about it but no response
 
 
 
-#### Visual Avatar Layer
+### Visual Avatar Layer
 
 Pipeline: Input → MetaHuman (Unreal Engine) → Output  
 
@@ -328,7 +340,7 @@ Example patches:
 * K.ai imitates the performer's movement in a mocking rather than exact-mirroring way
 * K.ai's skull becomes visible through its skin at a dynamically controllable ratio
 
-#### Scene Storage & File Management
+### Scene Storage & File Management
 
 All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take scene X and modify Y").
 
@@ -342,13 +354,9 @@ All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take s
 
 
 
+# Work In Progress Tracking
 
----
-
-## Work Tracking
-
-### Current Focus
-*What are we actively working on right now?*
+### Active Tasks
 
 * Initial architecture validation: STT → LLM → TTS pipeline with LiveKit Agents
 * LLM module: Gemma 4 local inference setup (vLLM / ollama)
@@ -368,17 +376,17 @@ All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take s
 
 ## Open Questions
 
-| #   | Question                                                | Context                                                                                                        | Owner  | Status |
-| --- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1   | Fish Audio S2 Pro license                               | Currently "research use only" — incompatible with open-source release goal. Need alternative or clarification. |        | WIP    |
-| 2   | Does Gemma 4 audio input make Whisper obsolete?         | If multimodal audio input works reliably, STT module may be droppable. Depends on latency and output quality.  |        | Open   |
-| 3   | Linux vs. Windows                                       | Linux gives better inference support (SGLang, vLLM). Team has limited Linux/WSL/Docker experience.             | Philip | Open   |
-| 4   | Is prompting sufficient for controlling the system?     | Possibly yes. Needs testing during rehearsal.                                                                  |        | Open   |
-| 5   | How to define indirect / co-presence input technically? | Central artistic and engineering question. What signals, at what granularity, map to what behaviors?           |        | Open   |
-| 6   | Direct vs. indirect input tension                       | When does K.ai respond to speech vs. presence vs. movement?                                                    |        | Open   |
-| 7   | Ethical LLM (kl3m)                                      | Grant application cites kl3m as "fair data" candidate. Compatible with latency and multimodal requirements?    |        | Open   |
-| 8   | Post-production data ownership                          | What happens to the performer's digital clone after the production closes? Legal and ethical.                  |        | Open   |
-| 9   | FaceBuilder licensing cost                              | Paid tool                                                                                                      |        | Open   |
+| Question                                                | Context                                                                                                        | Owner  | Status |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------ | ------ |
+| Fish Audio S2 Pro license                               | Currently "research use only" — incompatible with open-source release goal. Need alternative or clarification. |        | WIP    |
+| Does Gemma 4 audio input make Whisper obsolete?         | If multimodal audio input works reliably, STT module may be droppable. Depends on latency and output quality.  |        | Open   |
+| Linux vs. Windows                                       | Linux gives better inference support (SGLang, vLLM). Team has limited Linux/WSL/Docker experience.             | Philip | Open   |
+| Is prompting sufficient for controlling the system?     | Possibly yes. Needs testing during rehearsal.                                                                  |        | Open   |
+| How to define indirect / co-presence input technically? | Central artistic and engineering question. What signals, at what granularity, map to what behaviors?           |        | Open   |
+| Direct vs. indirect input tension                       | When does K.ai respond to speech vs. presence vs. movement?                                                    |        | Open   |
+| Ethical LLM (kl3m)                                      | Grant application cites kl3m as "fair data" candidate. Compatible with latency and multimodal requirements?    |        | Open   |
+| Post-production data ownership                          | What happens to the performer's digital clone after the production closes? Legal and ethical.                  |        | Open   |
+| FaceBuilder licensing cost                              | Paid tool                                                                                                      |        | Open   |
 
 
 
