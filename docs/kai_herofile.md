@@ -1,42 +1,54 @@
 # k.ai
-## Working Document
 
 **Authors:** Philip Gerdes, Malte Hillebrand, Lena Gieseke  
-**Last updated:** 22.04.2026  
 
 ## Change History
 
-| Date | Change | Author |
-| ---- | ------ | ------ |
-|      |        |        |
+| Date       | Change        | Author |
+| ---------- | ------------- | ------ |
+| 2026-04-22 | First Version | Lena   |
 
 
 ---
 
 * [k.ai](#kai)
-    * [Working Document](#working-document)
     * [Change History](#change-history)
 * [Overview](#overview)
     * [What is k.ai?](#what-is-kai)
     * [Vision \& Goals](#vision--goals)
     * [Usage Scenarios](#usage-scenarios)
-        * [Live Rehearsal Improvisation](#live-rehearsal-improvisation)
-        * [Optional Scenarios](#optional-scenarios)
-    * [Behavioral Models](#behavioral-models)
-* [System Architecture](#system-architecture)
+        * [Must Haves](#must-haves)
+        * [Optional](#optional)
+    * [Avatar Configuration](#avatar-configuration)
+        * [Presets and Mappings](#presets-and-mappings)
+        * [Temporal Settings](#temporal-settings)
+* [System Architecture - Improvisation](#system-architecture---improvisation)
     * [Input / Output](#input--output)
-    * [Overview Steps](#overview-steps)
-    * [Modularisierung](#modularisierung)
-    * [Components](#components)
-        * [Preprocessing](#preprocessing)
+    * [Processing Steps](#processing-steps)
+    * [Modularization](#modularization)
+    * [Modularization](#modularization-1)
+        * [Topology](#topology)
+    * [Architectural Layers](#architectural-layers)
         * [Orchestration](#orchestration)
-        * [STT Module](#stt-module)
-        * [LLM Module](#llm-module)
+        * [Preprocessing](#preprocessing)
+            * [Frame Extraction](#frame-extraction)
+            * [Audio Chunking](#audio-chunking)
+            * [Turn Detection](#turn-detection)
+            * [Additional Sensing](#additional-sensing)
+        * [STT](#stt)
+        * [Pose / Motion Estimation](#pose--motion-estimation)
+        * [LLM](#llm)
             * [LLM Benchmarking Setup](#llm-benchmarking-setup)
-        * [TTS Module](#tts-module)
-        * [Visual Avatar Layer](#visual-avatar-layer)
-        * [Scene Storage \& File Management](#scene-storage--file-management)
-    * [Design Decisions](#design-decisions)
+        * [TTS](#tts)
+        * [Avatar](#avatar)
+        * [Distortions](#distortions)
+        * [Control \& Configuration](#control--configuration)
+            * [GUI](#gui)
+            * [Input Files](#input-files)
+            * [Avatar Configuration and Prompt Library](#avatar-configuration-and-prompt-library)
+        * [Scene Recording](#scene-recording)
+* [System Architecture - Actor Cloning](#system-architecture---actor-cloning)
+        * [Decisions](#decisions)
 * [Work In Progress Tracking](#work-in-progress-tracking)
         * [Active Tasks](#active-tasks)
         * [Backlog](#backlog)
@@ -51,21 +63,21 @@
 
 ## What is k.ai?
 
-K.ai is a real-time generative AI system built for theatrical rehearsal and improvisation. It serves as an interactive, non-human scene partner for actors. The system perceives audio and video from the rehearsal room, processes these signals through a multimodal pipeline, and responds with synthesized speech and a moving visual avatar, displayed, e.g. on a screen or projected. K.ai is not a simulated actor but a deliberately distorted entity and its errors and non-human deviations are the artistic material, not defects to be corrected. K.ai's specific behavior, and appearance can be shaped and mutated by the humans during rehearsal.
+K.ai is a real-time generative AI system built for theatrical rehearsal and improvisation. It serves as an interactive, non-human scene partner for actors in an improvisation scenario. The system perceives audio and video from the rehearsal room, processes these signals through a multimodal pipeline, and responds with synthesized speech and a moving visual avatar, displayed, e.g., on a screen or being projected. The avatar is not a simulated actor but a deliberately distorted entity and its errors and non-human deviations are the artistic material, not defects to be corrected. The avatar's specific behavior, and appearance can be shaped and mutated by the humans during rehearsal.
 
-K.ai is developed in the context the artistic-scientific research project [Kaspar 2028 - AI as a Theatrical Toolbox](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/image_and_space/detail/kaspar_2028.html), funded by the German Federal Cultural Foundation in the [Art & AI](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/film_and_new_media/detail/kunst_und_ki.html). Hand in hand with the experimentation with K.ai, we are going to produce a repertoire-ready stage production of Peter Handke's *Kaspar* at the Residenztheater in Munich, in May 2028.
+The K.ai system is developed in the context the artistic-scientific research project [Kaspar 2028 - AI as a Theatrical Toolbox](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/image_and_space/detail/kaspar_2028.html), funded by the German Federal Cultural Foundation in the [Art & AI](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/film_and_new_media/detail/kunst_und_ki.html). Hand in hand with the experimentation with K.ai, we are going to produce a repertoire-ready stage production of Peter Handke's *Kaspar* at the Residenztheater in Munich, in May 2028.
 
 ## Vision & Goals
 
 The K.ai system should include the following features:
 
-* Live improvisation between a human performer and an algorithmic avatar in the rehearsal room
+* Live improvisation between a human performer and an algorithmic, virtual avatar in the rehearsal room
 * Experimentation with the progressiv distortion of the avatar into something alien and unstable
-* A pipeline that creates a digital double of a performer, to a degeree recognizable in appearance and voice, to be used as avatar
-* Production of recordings of K.ai's performance for re-use
-* Operability without engineering backgrounds
-* A modular and extensible setup
-* Open source release for use by theatre and art practitioners
+* A pipeline that creates a digital double of a performer, to a degree recognizable in appearance and voice, to be used as avatar basis
+* Production of recordings of the avatar's performance for re-use
+* Operability without engineering competences
+* A modular and extensible setup, easy to update to the newest developments
+* Open source release for use by creatives
 
 
 K.ai is explicitly NOT:  
@@ -80,81 +92,103 @@ K.ai is explicitly NOT:
 
 ## Usage Scenarios
 
-### Live Rehearsal Improvisation
+*Who does what, when, under what conditions?*
 
-* One performer enters a defined rehearsal space. K.ai, meaning the algorithmic avatar, is active. The performer speaks and moves and the system perceives the audio and video stream, processes input through its pipeline, and responds in real time.  
-* Human creatives can pre-configure the avatar's personality, behavioral rules, or visual mutation parameters or adjust them on the fly via an interface. 
-* Scenes are recorded (TODO: what is exactly recorded?).
+### Must Haves
 
-### Optional Scenarios
+Live Rehearsal Improvisation
 
-* Scripted performance recording: A scene is pre-scripted an can be loaded in K.ai. Its performance is recorded for later playback.
-* TODO: Something along the lines of sequencing?
+* One performer enters a defined rehearsal space. The algorithmic avatar, is active. The performer speaks and moves and the system processes the audio and video stream through its pipeline, and responds, interrupts, acts up, etc. in real time.  
+* Human creatives can pre-configure the avatar's personality, behavioral rules, or mutation parameters or adjust them on the fly via an interface. 
+* Scenes are recorded (*Open question*: What is exactly recorded?).
+
+### Optional
+
+Scripted performances  
+* A scene is pre-scripted and can be loaded in K.ai to be performed by the avatar and actor.
+  
+Performance VJing  
+* In addition to the performance of the avatar, there are some VJing options for humans to use during the performance, such as sequencing (the temporal arrangement of audiovisual clips or effects) to further modulate the generated audiovisual content.
 
 
-## Behavioral Models
 
-Personality bundles
-* Predefined sets of behaviors (personality, mood, movement style, vocal character) that can be selected and switched at runtime. 
-* Examples: animalistic movement patterns, body-horror aesthetics, Stanislavski-style tempo-rhythm modulation.
+## Avatar Configuration
+
+### Presets and Mappings
 
 Input-output relations
-* Mappings from perceived sensor signals to output behavior. 
-* Example: "the less the scene partner says, the more destroyed K.ai becomes". 
+* Mappings from sensor signals to output behavior and stylization. 
+* Example: "the less the scene partner says, the more destroyed the avatar becomes". 
 * These relations are pre-defined by the creative team.
 
-Temporal design
-* Response delay as an expressive parameter, inspired by Stanislavski's concept of tempo-rhythm.
-
-Mutation trajectory
-* K.ai starts with 1:1 mirroring of input and progressively diverges. Textual and visual instability is a core aesthetic goal.
+Behavior bundles
+* Predefined sets of behaviors (personality, mood, movement style, vocal character, etc.) that can be selected, switched and modified at runtime. 
+* Examples: animalistic movement patterns
 
 
+### Temporal Settings
+* Response delays as expressive parameter
+* Mutation trajectories, e.g., progressive divergence from 1:1 mirroring toward distortion
 
 
-# System Architecture
+
+# System Architecture - Improvisation 
 
 ## Input / Output 
 
+Input triggers are understood as both 
+* *direct input* (explicit speech directed at the avatar) and 
+* *indirect input* (co-presence as, e.g., movement, proximity, posture).
 
-| Input Type              | Description                                                             |
-| ----------------------- | ----------------------------------------------------------------------- |
-| Audio stream            | Live microphone capture from the rehearsal room                         |
-| Video stream            | Camera feed for motion/face tracking and visual context                 |
-| Prompts / Configuration | Plain text or YAML files defining personality, behavioral rules, scenes |
-| Controller signals      | Real-time parameter adjustments from the operator (sliders, patches)    |
-| Stored scenes           | Previously recorded K.ai outputs, re-injectable as context or material  |
 
-The system should support both **direct input** (explicit speech directed at K.ai) and **indirect / co-presence input** (movement, proximity, posture) as triggers. 
-
-| Output            | Format            | Destination                                    |
-| ----------------- | ----------------- | ---------------------------------------------- |
-| Synthesized voice | Audio stream      | Speakers in rehearsal room or theatre          |
-| Visual avatar     | Video             | Display / Projection / LED wall                |
-| Scene recordings  | File (format TBD) | Archive for re-use on stage or as future input |
-
-## Overview Steps
-
-TODO:
-
-| Step          | Description                                                                                  |
-| ------------- | -------------------------------------------------------------------------------------------- |
-| Preprocessing | Frame extraction from video stream; audio chunking                                           |
-| STT           | Speech-to-text transcription (Whisper / faster-whisper)                                      |
-| LLM           | Text processing and response generation (Gemma 4) with personality/behavior prompts injected |
-| TTS           | Speech synthesis in K.ai's cloned voice (Fish Audio S2 Pro)                                  |
-| Visual Avatar | MetaHuman rig driven by motion capture + distortion layer + optional real-time diffusion     |
-| Output        | Rendered avatar + synthesized audio to physical representation (screen / projection)         |
+| Input                                   | Description                               |
+| --------------------------------------- | ----------------------------------------- |
+| Audio stream                            | Microphone                                |
+| Video stream                            | Camera feed                               |
+| Text Prompts, Controller (slider, etc.) | Custom made GUI                           |
+| Configuration File(s)                   | *Open question*: TOML, JSONC, plain text? |
+| Stored scenes                           | Previously recorded K.ai outputs          |
 
 
 
+| Output                                  | Format            | Destination                                    |
+| --------------------------------------- | ----------------- | ---------------------------------------------- |
+| Voice                                   | Audio stream      | Speakers in rehearsal room or theatre          |
+| *Open question*: Ambient sound / music? | Audio stream      | Speakers in rehearsal room or theatre          |
+| Visual avatar                           | Video             | Display / Projection / LED wall                |
+| Scene recordings                        | File (format TBD) | Archive for re-use on stage or as future input |
+
+## Processing Steps
+
+*To Do*: Fill in avatar layer
 <img height="420" src="./img/overview.excalidraw.svg" class="pad">
 
+| Step                              | Description                                                                                                                                          |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Preprocessing                     | Frame extraction from video, audio chunking                                                                                                          |
+| STT <br/> Speech to Text          | Transcription of microphone input                                                                                                                    |
+| Pose & Motion Estimation          | Extracts skeletal data, proximity, and posture from video to drive indirect input                                                                    |
+| LLM   <br /> Large Language Model | Text processing and response generation, conditioned on behavior parameters from GUI and configuration                                               |
+| TTS <br /> Text to Speech         | Voice synthesis for the avatar                                                                                                                       |
+| Avatar Rendering                  | Composites the visual avatar from driving signals: raw or distorted video, pose data, LLM behavior tags, parameters from GUI, text prompt and config |
+| Scene Recording & Loading         | Captures session output to archive, or loads stored scenes as input                                                                                  |
 
-## Modularisierung
+
+
+
+## Modularization
+
+*To Do:* Update tools in figure.
 
 <img height="620" src="./img/modularization.excalidraw.svg" class="pad">
 
+
+
+Orchestration across all segments is handled by [LiveKit Agents](https://github.com/livekit/agents). LiveKit Agents is an open source Python or Node.js framework for building stateful, multimodal AI agents that orchestrate STT, LLM, TTS, and vision plugins for realtime voice and video interaction.
+
+* Each segment runs as an independent server. 
+* Inter-process communication via a local network (WebSockets).
+* This allows flexible distribution across multiple workstations and seamless fallback to hosted APIs (e.g. OpenAI Realtime API).
 
 * Kürzeste Latenz
     * 1 spezialisierte Workstation mit mehreren dedizierten GPUs für versch. Module
@@ -167,90 +201,118 @@ TODO:
     * nahtloses Fallback auf gehostete APIs (zB.: OpenAI Realtime API)
 
 
-Orchestration across all segments is handled by **LiveKit Agents**.
+## Modularization
 
-Each segment runs as an independent server. Inter-process communication via local network (WebSockets). This allows flexible distribution across multiple workstations and seamless fallback to hosted APIs (e.g. OpenAI Realtime API).
+*To Do:* Update tools in figure.
+
+<img height="620" src="./img/modularization.excalidraw.svg" class="pad">
+
+### Topology
+
+Two possible topologies:
+
+| Mechanism                                                                                                                                                                                   | Benefits                                                                                                          | Tradeoff                                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Single workstation with multiple dedicated GPUs, data exchange via CUDA IPC or shared memory                                                                                                | <ul><li>Lowest latency</li></ul>                                                                                  | <ul><li>Highest cost and complexity</li><li>Most likely not feasible with the available resources (competencies, budget, etc.)</li></ul> |
+| Each segment as an independent server with OpenAI API compatible endpoint (the OpenAI schema as de facto standard for LLM, STT, and TTS services), IPC over local network (e.g. WebSockets) | <ul><li>Highest flexibility</li><li>Works with existing hardware</li><li>Allows fallback to hosted APIs</li></ul> | <ul><li>Network adds latency </li></ul>                                                                                                  |
+
+Chosen Approach (22.04.2026): Each processing segment runs as an independent server.
 
 
-TODO:
 
-## Components
+## Architectural Layers
 
-Overview Tech Stack
+Last update: 2026-04-22
 
-| Layer             | Technology                                       | Notes                                    |
-| ----------------- | ------------------------------------------------ | ---------------------------------------- |
-| Orchestration     | LiveKit Agents                                   | STT→LLM→TTS pipeline management          |
-| STT               | Whisper / faster-whisper                         | May be superseded by Gemma 4 audio input |
-| LLM               | Gemma 4 via vLLM / ollama                        | Local inference, Apache 2.0              |
-| TTS               | Fish Audio S2 Pro                                | License TBD                              |
-| Avatar engine     | Unreal Engine + MetaHuman                        | LiveLink, FaceBuilder (paid)             |
-| Avatar distortion | Vertex shaders, bone manipulation, ComfyUI Spout | Real-time Stable Diffusion on UE output  |
-| Video sharing     | Spout + UE Spout Plugin                          | Windows GPU buffer sharing               |
-| Prompt config     | Plain text / YAML                                | Editable by non-technical creatives      |
-| OS                | Linux (preferred) / Windows                      | See open questions                       |
-| Hardware          | Multiple workstations with dedicated GPUs        | One per segment                          |
+| Layer                    | Tech                                                                              | Notes                                                                                                                           |
+| ------------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Hardware                 | Multiple workstations with dedicated GPUs                                         | One per segment, distributed via local network                                                                                  |
+| OS                       | *TBD:* Linux for inference segments, Windows for the Avatar engine and distortion | Windows constraint comes from the Spout dependency                                                                              |
+| Orchestration            | LiveKit Agents                                                                    | Pipeline management across all processing steps                                                                                 |
+| Preprocessing            | *TBD*                                                                             | Frame extraction, audio chunking, turn detection, additional sensing signals                                                    |
+| STT                      | *TBD*                                                                             | Candidates: Whisper, faster-whisper, Gemma 4 native audio                                                                       |
+| Pose / Motion Estimation | *TBD*                                                                             | Drives indirect input from camera feed                                                                                          |
+| LLM                      | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                                     |
+| TTS                      | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                                             |
+| Avatar                   | Unreal Engine + MetaHuman                                                         | LiveLink, FaceBuilder?                                                                                                          |
+| Distortions              | Vertex shaders, bone manipulation, ComfyUI                                        | Spout is Windows only, pinning this segment to a Windows node [^1]                                                              |
+| Control & Configuration  | *TBD*                                                                             | <ul><li>GUI controls</li><li>Configuration files</li><li>Avatar configuration and prompt library</li><li>Saved scenes</li></ul> |
+| Scene Recording          | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                                     |
+
+[^1]: Integration: capturing the Spout output in an external application (OBS, a Python script using spoutGL, etc.) and have that application publish to LiveKit, since no first party LiveKit Unreal plugin exists.
+
+
+### Orchestration
+
+Coordination across segments is handled by [LiveKit Agents](https://github.com/livekit/agents), an open source Python and Node.js framework for stateful, multimodal AI agents that join WebRTC rooms as participants and orchestrate STT, LLM, TTS, and vision plugins for realtime voice and video interaction.  
+
+WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit for realtime audio, video, and data streams, to handle transport and synchronization between distributed processing segments. Each segment joins a shared session ("room") as a participant, which removes the need for a custom sync layer between microphone input, avatar video, and synthesized voice.
+
+
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
 
 
 ### Preprocessing
 
-* Frame extraction from video stream
-* Audio chunking for STT input
-* Future: additional sensing signals (motion data, proximity, tracking features for co-presence input)
+#### Frame Extraction  
+* From the video stream, fan out to downstream consumers (pose estimation, avatar compositing, optional vision capable LLM input). 
+* Frame rate and resolution per consumer should be set independently to avoid overfetching.
 
-### Orchestration
+#### Audio Chunking  
+* For STT input, driven by Voice Activity Detection (VAD) rather than fixed time windows. 
+* [Silero VAD](https://github.com/snakers4/silero-vad) is the de facto open source standard and is natively integrated into `faster-whisper`. Tunable parameters: activation threshold, silence duration, prefix padding.
 
-**LiveKit Agents** manages the STT → LLM → TTS pipeline. Chosen for its native compatibility with this architecture and seamless OpenAI API compatibility.
+#### Turn Detection  
+* The related but distinct decision of *when the user has finished speaking* and the avatar should respond. 
+* Three common strategies
+    * VAD timeout (simple, prone to interrupting pauses)
+    * Semantic VAD (LLM judges utterance completeness, higher latency)
+    * Dedicated turn detection models (e.g. LiveKit's transformer based detector)
+* For k.ai we also want to deliberately *mis*judge turn boundaries (interrupting, pausing too long, responding to half utterances).
 
-> [LiveKit Agents](https://github.com/livekit/agents)
-
-- spezifisch entwickelt für STT → LMM → TTS Pipelines
-- nahtlose Kompatibilität mit `openai api`
-
-
-### STT Module
-
-- **Whisper** (via `faster-whisper` or `whisper-flow`)
-- May become obsolete if Gemma 4's native audio input is used directly — to be evaluated
-
-> [Whisper](https://openai.com/de-DE/index/whisper/)
-
-- [`faster-whisper`](https://github.com/SYSTRAN/faster-whisper)
-- [`whisper-flow`](https://github.com/dimastatz/whisper-flow)
-- Möglicherweise obsolet wenn Gemma 4 Audio Input genutzt werden kann
+#### Additional Sensing
+* Additional sensing signals for co-presence input (skeletal pose, proximity, gaze, gesture). These feed the Pose / Motion Estimation step rather than STT, but share the preprocessing concern of synchronization with audio and video frames so downstream stages see a temporally coherent snapshot.
 
 
-### LLM Module
-
-**Gemma 4** — selected for:
-- Multimodal input (audio/vision directly into the model)
-- Local inference optimizations (TurboQuant, per-layer embeddings)
-- Apache 2.0 license
-- Available via vLLM and ollama (llama.cpp)
-
-Personality and behavior are controlled via prompt configuration (plain text / YAML), designed to be modifiable by non-technical creatives during rehearsal.
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
 
 
-> [Gemma 4](https://huggingface.co/collections/google/gemma-4)
+### STT
 
-- Multimodaler Input direkt in das LLM
-- Spezifische Optimierungen für lokale Inferenz
-  - [TurboQuant](https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/)
-  - [Per-Layer Embeddings](https://newsletter.maartengrootendorst.com/i/193064129/per-layer-embeddings)
-- Apache 2.0 Lizenz
-- Verfügbar in `vLLM` und `ollama (llama.cpp)`
-
-  
-Linux ?
-- Deutlich besserer Support für Inferenz-Provider (`SGLang` & `vLLM`)
-- Mangelnde Erfahrung mit WSL oder Docker bzw. Linux allgemein (Philip)
+<span style="color:fuchsia">TODO</span>
 
 
 
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
+
+
+### Pose / Motion Estimation
+
+<span style="color:fuchsia">TODO</span>
+
+
+
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
+
+
+### LLM 
+
+<span style="color:fuchsia">TODO</span>
+
+
+*To be moved to sub-page:*
 
 #### LLM Benchmarking Setup
 
-> Alle Benchmarks wurden innerhalb der folgenden Rahmen-Parameter durchgeführt
+All benchmarks were run with the following parameters:
 
 - Single GPU → `NVIDIA GeForce RTX 4090 (24 GB)`
 - OS → `WSL (Ubuntu Distro)`
@@ -286,70 +348,110 @@ Time per Output Token   (TPOT)
 | P99 TPOT (ms)    | 20.80 | 12.85  |
 
 
-Ergebnisse   
+Results
 
-* TTFT ausschlaggebend für K.ai (Latenzminimierung)
-  * Fokus auf N = 6200 Anfragen
-    * ggf. Fehler bei der Messung mit N = 10 [*Ausreißer auf Folie 3]
-    * entspricht längerer Laufzeit dh. fakturiert ggf. Ermüdungserscheinungen durch Temperaturentwicklung mit ein
-* Durchsatz (TPOT) zwar `~ 6 ms` schneller bei `SGLang`
-* ABER erstes Token (Begin der Antwort) `~ 52 ms` schneller bei `vLLM`
-
-
-
-
-### TTS Module 
-
-**Fish Audio S2 Pro** — voice cloning and synthesis.
-License currently unclear (research-use only), we asked about it but no response.
-
-> [Fish Audio S2](https://github.com/fishaudio/fish-speech)
-
-- Unklare Lizenzierung (Nur zu Forschungszwecken) ! https://github.com/fishaudio/fish-speech/blob/main/LICENSE
+* TTFT is decisive for K.ai (latency minimization)
+  * Focus on N = 6200 requests
+    * Possible measurement error at N = 10 [*outlier on slide 3]
+    * Longer runtime, so the figure may also reflect fatigue effects from thermal buildup
+* Throughput (TPOT) is `~ 6 ms` faster with `SGLang`
+* BUT the first token (start of response) is `~ 52 ms` faster with `vLLM`
 
 
 
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
 
-### Visual Avatar Layer
 
-Pipeline: Input → MetaHuman (Unreal Engine) → Output  
+### TTS  
+
+<span style="color:fuchsia">TODO</span>
+
+
+
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
+
+
+### Avatar
+
+<span style="color:fuchsia">TODO</span>
+
+
+Base architecture: [MetaHuman](https://www.metahuman.com) in [Unreal Engine](https://www.unrealengine.com/)
 
 Input:
-* Motion capture via LiveLink in Unreal Engine
-* Face mesh via FaceBuilder by KeenTools (paid)
+* Motion capture (TODO: how specifically?) via [LiveLink](https://dev.epicgames.com/documentation/unreal-engine/live-link-in-unreal-engine) in Unreal Engine
+* Face mesh via [FaceBuilder](https://keentools.io/products/facebuilder-for-blender) (paid) (TODO: does what exactly?)
+
+
+
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
+
+
+### Distortions
+
+<span style="color:fuchsia">TODO</span>
+
 
 Distortion layer (applied after animation):  
 1. Bone transform manipulation of the rig
 2. Scrambled LiveLink association (e.g. left eye controls right arm)
 3. Vertex shader deformations
 
-Output layer:  
-* **Spout** for GPU video buffer sharing between Windows applications
-* **UE Spout Plugin** captures Scene Capture 2D from Unreal Engine
-* **ComfyUI Spout Nodes** enable real-time Stable Diffusion generation on the UE output image
 
-The distortion degree is dynamically controllable.
-
-####Controller Interface
-
-A real-time operator-facing interface for:
-* Sliders controlling body/voice posture along one or more dimensions
-* Activatable behavioral patches (on/off, or on/off + additional parameter)
-
-Example patches:
-* K.ai imitates the performer's movement in a mocking rather than exact-mirroring way
-* K.ai's skull becomes visible through its skin at a dynamically controllable ratio
-
-### Scene Storage & File Management
-
-All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take scene X and modify Y").
+* [Spout](https://spout.zeal.co/) for GPU video buffer sharing between Windows applications
+* ComfyUI Spout Nodes enable real-time Stable Diffusion generation on the UE output image
 
 
-## Design Decisions 
+
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
 |          |                    |                 |           |      |
+
+
+
+### Control & Configuration
+
+<span style="color:fuchsia">TODO</span>
+
+
+#### GUI
+
+#### Input Files
+
+#### Avatar Configuration and Prompt Library
+
+### Scene Recording
+
+
+
+---
+---
+
+# System Architecture - Actor Cloning 
+
+<span style="color:fuchsia">TODO</span>
+
+
+---
+---
+
+
+
+
+
+### Decisions 
+
+| Decision | Options Considered | Chosen Approach | Reasoning | Date |
+| -------- | ------------------ | --------------- | --------- | ---- |
+|          |                    |                 |           |      |
+
 
 
 
@@ -376,18 +478,16 @@ All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take s
 
 ## Open Questions
 
-| Question                                                | Context                                                                                                        | Owner  | Status |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------ | ------ |
-| Fish Audio S2 Pro license                               | Currently "research use only" — incompatible with open-source release goal. Need alternative or clarification. |        | WIP    |
-| Does Gemma 4 audio input make Whisper obsolete?         | If multimodal audio input works reliably, STT module may be droppable. Depends on latency and output quality.  |        | Open   |
-| Linux vs. Windows                                       | Linux gives better inference support (SGLang, vLLM). Team has limited Linux/WSL/Docker experience.             | Philip | Open   |
-| Is prompting sufficient for controlling the system?     | Possibly yes. Needs testing during rehearsal.                                                                  |        | Open   |
-| How to define indirect / co-presence input technically? | Central artistic and engineering question. What signals, at what granularity, map to what behaviors?           |        | Open   |
-| Direct vs. indirect input tension                       | When does K.ai respond to speech vs. presence vs. movement?                                                    |        | Open   |
-| Ethical LLM (kl3m)                                      | Grant application cites kl3m as "fair data" candidate. Compatible with latency and multimodal requirements?    |        | Open   |
-| Post-production data ownership                          | What happens to the performer's digital clone after the production closes? Legal and ethical.                  |        | Open   |
-| FaceBuilder licensing cost                              | Paid tool                                                                                                      |        | Open   |
-
+| Question                                                | Context                                                                                                                                  | Owner | Status |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------ |
+| Fish Audio S2 Pro license                               | Currently "research use only", does that apply to us?                                                                                    | Lena  | WIP    |
+| How to define indirect / co-presence input technically? | What signals, at what granularity, map to what behaviors?                                                                                |       | Open   |
+| Ethical AI                                              | Compatible with latency and multimodal requirements?                                                                                     |       | Open   |
+| Configuration file format                               | TOML, YAML, JSONC, or plain text? Affects prompt library, session config, and scene recall files. Tradeoff between footguns and tooling. |       | Open   |
+| Scene recording format and storage                      | What gets archived (video, audio, parameter snapshots, transcripts, all of the above)? Where and in what format?                         |       | Open   |
+| Latency budget per pipeline segment                     | Targets currently TBD across all segments. Required to validate the distributed topology against realtime constraints.                   |       | Open   |
+| Ambient sound and music output                          | Separate audio stream, mixed with voice, or out of scope?                                                                                |       | Open   |
+| How to support a "co-presence"?                         | E.g., with a spatial audio setup                                                                                                         |       | Open   |
 
 
 ---
@@ -395,14 +495,13 @@ All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take s
 ## Risks
 
 
-| Risk                                                         | Likelihood | Impact | Mitigation                                                                      |
-| ------------------------------------------------------------ | ---------- | ------ | ------------------------------------------------------------------------------- |
-| Latency too high for live improvisation                      | High       | High   | Local inference; GPU-per-module; minimize network hops; fallback to hosted APIs |
-| Fish Audio license incompatible with open-source release     | Medium     | High   | Identify TTS alternative early                                                  |
-| LLM output too coherent / "normal"                           | Medium     | High   | Aggressive prompt engineering; behavioral mutation layers                       |
-| Team unfamiliarity with Linux                                | Medium     | Medium | Evaluate WSL/Docker; Windows as fallback with performance trade-off             |
-| Hardware insufficient for real-time multi-segment pipeline   | Medium     | High   | Profile early; design fallback to hosted APIs                                   |
-| Non-technical creatives unable to modify prompts effectively | Medium     | Medium | Invest in prompt interface tooling and documentation                            |
+| Risk                                                       | Likelihood | Impact | Mitigation                                                                      |
+| ---------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------- |
+| Latency too high for live improvisation                    | High       | High   | Local inference; GPU-per-module; minimize network hops; fallback to hosted APIs |
+| LLM output too coherent and "normal"                       | Medium     | High   | Think about "breaking" the system?                                              |
+| Team unfamiliarity with Linux                              | Medium     | Medium | Evaluate WSL/Docker; Windows as fallback with performance trade-off             |
+| Hardware insufficient for real-time multi-segment pipeline | Medium     | Medium | Profile early; design fallback to hosted APIs; New hardware purchases           |
+
 
 ---
 
@@ -410,19 +509,19 @@ All K.ai scenes are recorded. Stored scenes can be re-injected as input ("take s
 *Domain-specific or project-specific terms defined for external readers.*
 
 
-| Term               | Definition                                                                                                  |
-| ------------------ | ----------------------------------------------------------------------------------------------------------- |
-| K.ai / Kaspar.ai   | The AI system developed for Kaspar 2028                                                                     |
-| STT                | Speech-to-text: converts spoken audio to text                                                               |
-| LLM                | Large language model: generates text responses                                                              |
-| TTS                | Text-to-speech: synthesizes spoken audio from text                                                          |
-| RAG                | Retrieval-Augmented Generation: extends LLM context with retrieved documents                                |
-| MetaHuman          | Unreal Engine tool for creating high-fidelity digital humans                                                |
-| LiveLink           | Unreal Engine protocol for streaming real-time animation data                                               |
-| Spout              | Windows framework for sharing GPU video buffers between applications                                        |
-| Virtual Production | Real-time CGI technique for filmmaking                                                                      |
-| Co-presence input  | Indirect input from the performer's physical presence (movement, proximity, posture) as opposed to explicit |
-| Brain damage       | Working metaphor for the system: deliberately broken or scrambled to produce alien, non-human behavior      |
+| Term               | Definition                                                                                                                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| K.ai / Kaspar.ai   | The AI system developed for Kaspar 2028                                                                                                                                                               |
+| STT                | Speech-to-text: converts spoken audio to text                                                                                                                                                         |
+| LLM                | Large language model: generates text responses                                                                                                                                                        |
+| TTS                | Text-to-speech: synthesizes spoken audio from text                                                                                                                                                    |
+| RAG                | Retrieval-Augmented Generation: extends LLM context with retrieved documents                                                                                                                          |
+| MetaHuman          | Unreal Engine tool for creating high-fidelity digital humans                                                                                                                                          |
+| LiveLink           | Unreal Engine protocol for streaming real-time animation data                                                                                                                                         |
+| Spout              | Windows framework for sharing GPU video buffers between applications                                                                                                                                  |
+| Virtual Production | Real-time CGI techniques for filmmaking                                                                                                                                                               |
+| Co-presence        | The felt sense of sharing a space with another agent, sustained by mutual awareness and continuous low level signaling (gaze, posture, proximity, breath, etc.) rather than by explicit interactions. |
+| Brain damage       | Working metaphor for the system: deliberately broken or scrambled to produce alien, non-human behavior                                                                                                |
 
 
 ---
