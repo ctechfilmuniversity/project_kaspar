@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Layer LLM
-nav_exclude: false
+parent: Live Rehearsal Improvisation
+nav_order: 5
 ---
 
 

@@ -1,7 +1,9 @@
 ---
 layout: default
 title: Layer TTS
-nav_exclude: false
+parent: Live Rehearsal Improvisation
+parent: Live Rehearsal Improvisation
+nav_order: 6
 ---
 
 

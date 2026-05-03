@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Layer Hardware, OS & Orchestration
-nav_exclude: false
+parent: Live Rehearsal Improvisation
+nav_order: 1
 ---
 
 
