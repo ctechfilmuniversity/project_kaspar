@@ -6,13 +6,13 @@ nav_order: 1
 has_children: false
 ---
 
-# k.ai
+# k.ai Developments
 
 This repository documents the development of k.ai, the generative AI system being built as part of the project **Kaspar 2028**. The repo serves four purposes: communicating current status and plans to external collaborators, maintaining detailed working records, easing onboarding for contributors who join during the project, and hosting the codebase.  
   
 This file `kai_herofile.md` summarizes all topics into a single informed overview. Most topics have a dedicated subfile containing detailled working notes.  
   
-### File Management
+## File Management
 
 **Authors:** Philip Gerdes, Malte Hillebrand, Lena Gieseke  
 
@@ -22,9 +22,8 @@ File Change History:
 | ---------- | ------------- | ------ |
 | 2026-04-22 | First Version | Lena   |
 
-
-* [k.ai](#kai)
-        * [File Management](#file-management)
+* [k.ai Developments](#kai-developments)
+    * [File Management](#file-management)
 * [What is k.ai?](#what-is-kai)
     * [Vision \& Goals](#vision--goals)
     * [Usage Scenarios](#usage-scenarios)
@@ -69,7 +68,7 @@ File Change History:
 * [References \& Links](#references--links)
 
 
----
+
 ---
 
 # What is k.ai?
@@ -225,11 +224,11 @@ Chosen Approach (22.04.2026): Each processing segment runs as an independent ser
 | Motion Estimation       | *TBD*                                                                             | Drives indirect input from camera feed                                                                                          |
 | LLM                     | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                                     |
 | TTS                     | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                                             |
-| Avatar Engine           | Unreal Engine + MetaHuman, Vertex shaders, bone manipulation, ComfyUI             | LiveLink, FaceBuilder? <br /> Spout is Windows only, pinning this segment to a Windows node [^1]                                |
+| Avatar Engine           | Unreal Engine + MetaHuman, Vertex shaders, bone manipulation, ComfyUI             | LiveLink, FaceBuilder? <br /> Spout is Windows only, pinning this segment to a Windows node^1                                   |
 | Control & Configuration | *TBD*                                                                             | <ul><li>GUI controls</li><li>Configuration files</li><li>Avatar configuration and prompt library</li><li>Saved scenes</li></ul> |
 | Scene Recording         | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                                     |
 
-[^1]: Integration: capturing the Spout output in an external application (OBS, a Python script using spoutGL, etc.) and have that application publish to LiveKit, since no first party LiveKit Unreal plugin exists.
+^1: Integration: capturing the Spout output in an external application (OBS, a Python script using spoutGL, etc.) and have that application publish to LiveKit, since no first party LiveKit Unreal plugin exists.
 
 
 ### Orchestration
@@ -382,7 +381,7 @@ Distortion layer (applied after animation):
 [Further Information ➚](./improv/layer/kai_layer_scene_recording_file_management.md)
 
 ---
----
+
 
 # System Architecture - 2. Digital Double Capturing
 
@@ -390,7 +389,7 @@ Distortion layer (applied after animation):
 
 
 ---
----
+
 
 
 
@@ -425,7 +424,7 @@ Distortion layer (applied after animation):
 
 
 ---
----
+
 
 
 
@@ -448,7 +447,7 @@ Distortion layer (applied after animation):
 *Completed items worth recording for context.*
 
 ---
----
+
 
 
 # Glossary
