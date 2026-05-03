@@ -223,7 +223,7 @@ Coordination across segments is handled by [LiveKit Agents](https://github.com/l
 
 WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit for realtime audio, video, and data streams, to handle transport and synchronization between distributed processing segments. Each segment joins a shared session ("room") as a participant, which removes the need for a custom sync layer between microphone input, avatar video, and synthesized voice.
 
-[Further Information ➚](./kai_layer_hardware_os_orchestration.md)
+[Further Information ➚](./layer/kai_layer_hardware_os_orchestration.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
@@ -254,7 +254,7 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 
 * Additional sensing signals for co-presence input (skeletal pose, proximity, gaze, gesture). These feed the Motion Estimation step rather than STT, but share the preprocessing concern of synchronization with audio and video frames so downstream stages see a temporally coherent snapshot.
 
-[Further Information ➚](./kai_layer_preprocessing.md)
+[Further Information ➚](./layer/kai_layer_preprocessing.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
@@ -267,7 +267,7 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 
 <span style="color:fuchsia">TODO</span>
 
-[Further Information ➚](./kai_layer_stt.md)
+[Further Information ➚](./layer/kai_layer_stt.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
@@ -281,7 +281,7 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 <span style="color:fuchsia">TODO</span>
 
 
-[Further Information ➚](./kai_layer_motion_esitmation.md)
+[Further Information ➚](./layer/kai_layer_motion_esitmation.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
@@ -296,7 +296,7 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 
 
 
-[Further Information ➚](./kai_layer_llm.md)
+[Further Information ➚](./layer/kai_layer_llm.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
@@ -309,7 +309,7 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 
 <span style="color:fuchsia">TODO</span>
 
-[Further Information ➚](./kai_layer_tts.md)
+[Further Information ➚](./layer/kai_layer_tts.md)
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
@@ -343,7 +343,7 @@ Distortion layer (applied after animation):
 * ComfyUI Spout Nodes enable real-time Stable Diffusion generation on the UE output image
 
 
-[Further Information ➚](./kai_layer_avatar_engine.md)
+[Further Information ➚](./layer/kai_layer_avatar_engine.md)
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
@@ -364,7 +364,7 @@ Distortion layer (applied after animation):
 
 ### Scene Recording
 
-[Further Information ➚](./kai_layer_scene_recording_file_management.md)
+[Further Information ➚](./layer/kai_layer_scene_recording_file_management.md)
 
 ---
 ---
