@@ -8,6 +8,12 @@ has_children: false
 
 # k.ai
 
+This repository documents the development of k.ai, the generative AI system being built as part of the project **Kaspar 2028**. The repo serves four purposes: communicating current status and plans to external collaborators, maintaining detailed working records, easing onboarding for contributors who join during the project, and hosting the codebase.  
+  
+This file `kai_herofile.md` summarizes all topics into a single informed overview. Most topics have a dedicated subfile containing detailled working notes.  
+  
+### File Management
+
 **Authors:** Philip Gerdes, Malte Hillebrand, Lena Gieseke  
 
 File Change History:
@@ -17,9 +23,8 @@ File Change History:
 | 2026-04-22 | First Version | Lena   |
 
 
----
-
 * [k.ai](#kai)
+        * [File Management](#file-management)
 * [What is k.ai?](#what-is-kai)
     * [Vision \& Goals](#vision--goals)
     * [Usage Scenarios](#usage-scenarios)
@@ -63,6 +68,9 @@ File Change History:
 * [Glossary](#glossary)
 * [References \& Links](#references--links)
 
+
+---
+---
 
 # What is k.ai?
 
