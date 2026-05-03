@@ -1,3 +1,7 @@
+---
+permalink: /index.html
+---
+
 # k.ai
 
 **Authors:** Philip Gerdes, Malte Hillebrand, Lena Gieseke  
