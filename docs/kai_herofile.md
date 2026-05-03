@@ -2,7 +2,7 @@
 
 **Authors:** Philip Gerdes, Malte Hillebrand, Lena Gieseke  
 
-## Change History
+File Change History:
 
 | Date       | Change        | Author |
 | ---------- | ------------- | ------ |
@@ -12,21 +12,21 @@
 ---
 
 * [k.ai](#kai)
-    * [Change History](#change-history)
-* [Overview](#overview)
-    * [What is k.ai?](#what-is-kai)
+        * [File Change History:](#file-change-history)
+* [What is k.ai?](#what-is-kai)
     * [Vision \& Goals](#vision--goals)
     * [Usage Scenarios](#usage-scenarios)
         * [Must Haves](#must-haves)
+            * [1. Live Rehearsal Improvisation](#1-live-rehearsal-improvisation)
+            * [2. Digital Double Capturing](#2-digital-double-capturing)
         * [Optional](#optional)
     * [Avatar Configuration](#avatar-configuration)
         * [Presets and Mappings](#presets-and-mappings)
         * [Temporal Settings](#temporal-settings)
-* [System Architecture - Improvisation](#system-architecture---improvisation)
+* [System Architecture - 1. Live Rehearsal Improvisation](#system-architecture---1-live-rehearsal-improvisation)
     * [Input / Output](#input--output)
     * [Processing Steps](#processing-steps)
     * [Modularization](#modularization)
-    * [Modularization](#modularization-1)
         * [Topology](#topology)
     * [Architectural Layers](#architectural-layers)
         * [Orchestration](#orchestration)
@@ -36,32 +36,28 @@
             * [Turn Detection](#turn-detection)
             * [Additional Sensing](#additional-sensing)
         * [STT](#stt)
-        * [Pose / Motion Estimation](#pose--motion-estimation)
+        * [Motion Estimation](#motion-estimation)
         * [LLM](#llm)
-            * [LLM Benchmarking Setup](#llm-benchmarking-setup)
         * [TTS](#tts)
-        * [Avatar](#avatar)
-        * [Distortions](#distortions)
+        * [Avatar Engine](#avatar-engine)
+            * [Distortions](#distortions)
         * [Control \& Configuration](#control--configuration)
             * [GUI](#gui)
             * [Input Files](#input-files)
             * [Avatar Configuration and Prompt Library](#avatar-configuration-and-prompt-library)
         * [Scene Recording](#scene-recording)
-* [System Architecture - Actor Cloning](#system-architecture---actor-cloning)
-        * [Decisions](#decisions)
+* [System Architecture - 2. Digital Double Capturing](#system-architecture---2-digital-double-capturing)
+* [Open Questions](#open-questions)
+* [Risks](#risks)
 * [Work In Progress Tracking](#work-in-progress-tracking)
-        * [Active Tasks](#active-tasks)
-        * [Backlog](#backlog)
-        * [Done](#done)
-    * [Open Questions](#open-questions)
-    * [Risks](#risks)
-    * [Glossary](#glossary)
-    * [References \& Links](#references--links)
+    * [Active Tasks](#active-tasks)
+    * [Backlog](#backlog)
+    * [Done](#done)
+* [Glossary](#glossary)
+* [References \& Links](#references--links)
 
 
-# Overview
-
-## What is k.ai?
+# What is k.ai?
 
 K.ai is a real-time generative AI system built for theatrical rehearsal and improvisation. It serves as an interactive, non-human scene partner for actors in an improvisation scenario. The system perceives audio and video from the rehearsal room, processes these signals through a multimodal pipeline, and responds with synthesized speech and a moving visual avatar, displayed, e.g., on a screen or being projected. The avatar is not a simulated actor but a deliberately distorted entity and its errors and non-human deviations are the artistic material, not defects to be corrected. The avatar's specific behavior, and appearance can be shaped and mutated by the humans during rehearsal.
 
@@ -96,11 +92,17 @@ K.ai is explicitly NOT:
 
 ### Must Haves
 
-Live Rehearsal Improvisation
+#### 1. Live Rehearsal Improvisation
 
 * One performer enters a defined rehearsal space. The algorithmic avatar, is active. The performer speaks and moves and the system processes the audio and video stream through its pipeline, and responds, interrupts, acts up, etc. in real time.  
 * Human creatives can pre-configure the avatar's personality, behavioral rules, or mutation parameters or adjust them on the fly via an interface. 
 * Scenes are recorded (*Open question*: What is exactly recorded?).
+
+#### 2. Digital Double Capturing
+
+* A human performer can be digitized via a lightweight capture pipeline, ideally built from off the shelf hardware (e.g. consumer cameras, smartphones).
+* The resulting digital double can be used as an avatar within K.ai with all functionality.
+* *Open question*: What likeness is required? 
 
 ### Optional
 
@@ -132,7 +134,7 @@ Behavior bundles
 
 
 
-# System Architecture - Improvisation 
+# System Architecture - 1. Live Rehearsal Improvisation 
 
 ## Input / Output 
 
@@ -176,34 +178,10 @@ Input triggers are understood as both
 
 
 
-## Modularization
-
-*To Do:* Update tools in figure.
-
-<img height="620" src="./img/modularization.excalidraw.svg" class="pad">
-
-
-
-Orchestration across all segments is handled by [LiveKit Agents](https://github.com/livekit/agents). LiveKit Agents is an open source Python or Node.js framework for building stateful, multimodal AI agents that orchestrate STT, LLM, TTS, and vision plugins for realtime voice and video interaction.
-
-* Each segment runs as an independent server. 
-* Inter-process communication via a local network (WebSockets).
-* This allows flexible distribution across multiple workstations and seamless fallback to hosted APIs (e.g. OpenAI Realtime API).
-
-* Kürzeste Latenz
-    * 1 spezialisierte Workstation mit mehreren dedizierten GPUs für versch. Module
-    * Datenaustausch durch CUDA IPC (GPU-to-GPU) oder Shared Memory
-    * Höchste Kosten & höchste Komplexität (nicht umsetzbar)
-* Größte Flexibilität
-    * Jedes Segment als Server mit `openai api` kompatiblem Endpunkt
-    * IPC über lokales Netzwerk (zB.: Websockets)
-    * gutes Mapping auf vorhandene Hardware (Verteilung auf mehrere Workstations)
-    * nahtloses Fallback auf gehostete APIs (zB.: OpenAI Realtime API)
-
 
 ## Modularization
 
-*To Do:* Update tools in figure.
+*To Do:* Update figure.
 
 <img height="620" src="./img/modularization.excalidraw.svg" class="pad">
 
@@ -222,22 +200,19 @@ Chosen Approach (22.04.2026): Each processing segment runs as an independent ser
 
 ## Architectural Layers
 
-Last update: 2026-04-22
-
-| Layer                    | Tech                                                                              | Notes                                                                                                                           |
-| ------------------------ | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Hardware                 | Multiple workstations with dedicated GPUs                                         | One per segment, distributed via local network                                                                                  |
-| OS                       | *TBD:* Linux for inference segments, Windows for the Avatar engine and distortion | Windows constraint comes from the Spout dependency                                                                              |
-| Orchestration            | LiveKit Agents                                                                    | Pipeline management across all processing steps                                                                                 |
-| Preprocessing            | *TBD*                                                                             | Frame extraction, audio chunking, turn detection, additional sensing signals                                                    |
-| STT                      | *TBD*                                                                             | Candidates: Whisper, faster-whisper, Gemma 4 native audio                                                                       |
-| Pose / Motion Estimation | *TBD*                                                                             | Drives indirect input from camera feed                                                                                          |
-| LLM                      | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                                     |
-| TTS                      | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                                             |
-| Avatar                   | Unreal Engine + MetaHuman                                                         | LiveLink, FaceBuilder?                                                                                                          |
-| Distortions              | Vertex shaders, bone manipulation, ComfyUI                                        | Spout is Windows only, pinning this segment to a Windows node [^1]                                                              |
-| Control & Configuration  | *TBD*                                                                             | <ul><li>GUI controls</li><li>Configuration files</li><li>Avatar configuration and prompt library</li><li>Saved scenes</li></ul> |
-| Scene Recording          | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                                     |
+| Layer                   | Tech                                                                              | Notes                                                                                                                           |
+| ----------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Hardware                | Multiple workstations with dedicated GPUs                                         | One per segment, distributed via local network                                                                                  |
+| OS                      | *TBD:* Linux for inference segments, Windows for the Avatar engine and distortion | Windows constraint comes from the Spout dependency                                                                              |
+| Orchestration           | LiveKit Agents                                                                    | Pipeline management across all processing steps                                                                                 |
+| Preprocessing           | *TBD*                                                                             | Frame extraction, audio chunking, turn detection, additional sensing signals                                                    |
+| STT                     | *TBD*                                                                             | Candidates: Whisper, faster-whisper, Gemma 4 native audio                                                                       |
+| Motion Estimation       | *TBD*                                                                             | Drives indirect input from camera feed                                                                                          |
+| LLM                     | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                                     |
+| TTS                     | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                                             |
+| Avatar Engine           | Unreal Engine + MetaHuman, Vertex shaders, bone manipulation, ComfyUI             | LiveLink, FaceBuilder? <br /> Spout is Windows only, pinning this segment to a Windows node [^1]                                |
+| Control & Configuration | *TBD*                                                                             | <ul><li>GUI controls</li><li>Configuration files</li><li>Avatar configuration and prompt library</li><li>Saved scenes</li></ul> |
+| Scene Recording         | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                                     |
 
 [^1]: Integration: capturing the Spout output in an external application (OBS, a Python script using spoutGL, etc.) and have that application publish to LiveKit, since no first party LiveKit Unreal plugin exists.
 
@@ -248,10 +223,13 @@ Coordination across segments is handled by [LiveKit Agents](https://github.com/l
 
 WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit for realtime audio, video, and data streams, to handle transport and synchronization between distributed processing segments. Each segment joins a shared session ("room") as a participant, which removes the need for a custom sync layer between microphone input, avatar video, and synthesized voice.
 
+[Further Information ➚](./kai_layer_hardware_os_orchestration.md)
+
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
 |          |                    |                 |           |      |
+
 
 
 ### Preprocessing
@@ -273,18 +251,23 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 * For k.ai we also want to deliberately *mis*judge turn boundaries (interrupting, pausing too long, responding to half utterances).
 
 #### Additional Sensing
-* Additional sensing signals for co-presence input (skeletal pose, proximity, gaze, gesture). These feed the Pose / Motion Estimation step rather than STT, but share the preprocessing concern of synchronization with audio and video frames so downstream stages see a temporally coherent snapshot.
+
+* Additional sensing signals for co-presence input (skeletal pose, proximity, gaze, gesture). These feed the Motion Estimation step rather than STT, but share the preprocessing concern of synchronization with audio and video frames so downstream stages see a temporally coherent snapshot.
+
+[Further Information ➚](./kai_layer_preprocessing.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
 |          |                    |                 |           |      |
+
 
 
 ### STT
 
 <span style="color:fuchsia">TODO</span>
 
+[Further Information ➚](./kai_layer_stt.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
@@ -292,15 +275,19 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 |          |                    |                 |           |      |
 
 
-### Pose / Motion Estimation
+
+### Motion Estimation
 
 <span style="color:fuchsia">TODO</span>
 
 
+[Further Information ➚](./kai_layer_motion_esitmation.md)
+
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
 |          |                    |                 |           |      |
+
 
 
 ### LLM 
@@ -308,74 +295,28 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 <span style="color:fuchsia">TODO</span>
 
 
-*To be moved to sub-page:*
 
-#### LLM Benchmarking Setup
-
-All benchmarks were run with the following parameters:
-
-- Single GPU → `NVIDIA GeForce RTX 4090 (24 GB)`
-- OS → `WSL (Ubuntu Distro)`
-- Python Environment Management → `uv`
-- Referenz-Datensatz: `FreedomIntelligence/sharegpt-deutsch`
-
-Time to First Token (TTFT)  
-
-| N = 10 queries   | vLLM    | SGLang |
-| ---------------- | ------- | ------ |
-| Mean TTFT (ms)   | 125.68  | 66.53  |
-| Median TTFT (ms) | 84.61   | 70.08  |
-| P99 TTFT (ms)    | 427.94* | 84.02  |
-
-| N = 6200 queries | vLLM  | SGLang |
-| ---------------- | ----- | ------ |
-| Mean TTFT (ms)   | 34.57 | 48.74  |
-| Median TTFT (ms) | 29.84 | 42.73  |
-| P99 TTFT (ms)    | 79.27 | 153.23 |
-
-Time per Output Token   (TPOT)  
-
-| N = 10 queries   | vLLM  | SGLang |
-| ---------------- | ----- | ------ |
-| Mean TPOT (ms)   | 14.30 | 12.19  |
-| Median TPOT (ms) | 14.27 | 12.23  |
-| P99 TPOT (ms)    | 14.45 | 12.27  |
-
-| N = 6200 queries | vLLM  | SGLang |
-| ---------------- | ----- | ------ |
-| Mean TPOT (ms)   | 14.32 | 12.17  |
-| Median TPOT (ms) | 14.00 | 12.11  |
-| P99 TPOT (ms)    | 20.80 | 12.85  |
-
-
-Results
-
-* TTFT is decisive for K.ai (latency minimization)
-  * Focus on N = 6200 requests
-    * Possible measurement error at N = 10 [*outlier on slide 3]
-    * Longer runtime, so the figure may also reflect fatigue effects from thermal buildup
-* Throughput (TPOT) is `~ 6 ms` faster with `SGLang`
-* BUT the first token (start of response) is `~ 52 ms` faster with `vLLM`
-
+[Further Information ➚](./kai_layer_llm.md)
 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
 |          |                    |                 |           |      |
+
 
 
 ### TTS  
 
 <span style="color:fuchsia">TODO</span>
 
-
+[Further Information ➚](./kai_layer_tts.md)
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
 |          |                    |                 |           |      |
 
 
-### Avatar
+### Avatar Engine
 
 <span style="color:fuchsia">TODO</span>
 
@@ -387,13 +328,7 @@ Input:
 * Face mesh via [FaceBuilder](https://keentools.io/products/facebuilder-for-blender) (paid) (TODO: does what exactly?)
 
 
-
-| Decision | Options Considered | Chosen Approach | Reasoning | Date |
-| -------- | ------------------ | --------------- | --------- | ---- |
-|          |                    |                 |           |      |
-
-
-### Distortions
+#### Distortions
 
 <span style="color:fuchsia">TODO</span>
 
@@ -408,7 +343,7 @@ Distortion layer (applied after animation):
 * ComfyUI Spout Nodes enable real-time Stable Diffusion generation on the UE output image
 
 
-
+[Further Information ➚](./kai_layer_avatar_engine.md)
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
@@ -429,12 +364,12 @@ Distortion layer (applied after animation):
 
 ### Scene Recording
 
-
+[Further Information ➚](./kai_layer_scene_recording_file_management.md)
 
 ---
 ---
 
-# System Architecture - Actor Cloning 
+# System Architecture - 2. Digital Double Capturing
 
 <span style="color:fuchsia">TODO</span>
 
@@ -445,38 +380,7 @@ Distortion layer (applied after animation):
 
 
 
-
-### Decisions 
-
-| Decision | Options Considered | Chosen Approach | Reasoning | Date |
-| -------- | ------------------ | --------------- | --------- | ---- |
-|          |                    |                 |           |      |
-
-
-
-
-
-# Work In Progress Tracking
-
-### Active Tasks
-
-* Initial architecture validation: STT → LLM → TTS pipeline with LiveKit Agents
-* LLM module: Gemma 4 local inference setup (vLLM / ollama)
-* Avatar layer: MetaHuman rig + LiveLink + distortion prototype
-
-### Backlog
-*Features and tasks queued but not yet started.*
-
-| Item | Priority | Owner | Notes |
-| ---- | -------- | ----- | ----- |
-|      |          |       |       |
-
-### Done
-*Completed items worth recording for context.*
-
----
-
-## Open Questions
+# Open Questions
 
 | Question                                                | Context                                                                                                                                  | Owner | Status |
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----- | ------ |
@@ -488,11 +392,12 @@ Distortion layer (applied after animation):
 | Latency budget per pipeline segment                     | Targets currently TBD across all segments. Required to validate the distributed topology against realtime constraints.                   |       | Open   |
 | Ambient sound and music output                          | Separate audio stream, mixed with voice, or out of scope?                                                                                |       | Open   |
 | How to support a "co-presence"?                         | E.g., with a spatial audio setup                                                                                                         |       | Open   |
+| Which terminology to use?                               | Is K.ai the whole system (as used in this document) or the avatar? Do we want to deal with anthropomorphizing language?                  |       | Open   |
 
 
----
 
-## Risks
+
+# Risks
 
 
 | Risk                                                       | Likelihood | Impact | Mitigation                                                                      |
@@ -503,9 +408,35 @@ Distortion layer (applied after animation):
 | Hardware insufficient for real-time multi-segment pipeline | Medium     | Medium | Profile early; design fallback to hosted APIs; New hardware purchases           |
 
 
+
+---
 ---
 
-## Glossary
+
+
+# Work In Progress Tracking
+
+## Active Tasks
+
+* Initial architecture validation: STT → LLM → TTS pipeline with LiveKit Agents
+* LLM module: Gemma 4 local inference setup (vLLM / ollama)
+* Avatar layer: MetaHuman rig + LiveLink + distortion prototype
+
+## Backlog
+*Features and tasks queued but not yet started.*
+
+| Item | Priority | Owner | Notes |
+| ---- | -------- | ----- | ----- |
+|      |          |       |       |
+
+## Done
+*Completed items worth recording for context.*
+
+---
+---
+
+
+# Glossary
 *Domain-specific or project-specific terms defined for external readers.*
 
 
@@ -526,6 +457,6 @@ Distortion layer (applied after animation):
 
 ---
 
-## References & Links
+# References & Links
 
-TODO:
+<span style="color:fuchsia">TODO</span>
