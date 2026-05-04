@@ -1,0 +1,359 @@
+/*!
+ * @theme wpd
+ * @author whatphilipcodes
+ * roughly based on https://github.com/marp-team/marp-core/blob/main/themes/default.scss
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono&family=Space+Grotesk:wght@500&display=swap');
+
+section {
+  --padding: 32px;
+  --padding-slide: 96px;
+
+  --font-size: 40px;
+  --font-size-meta: 24px;
+  
+  --border-radius: 8px;
+
+  /* calculated vars */
+  --dist-meta: calc(var(--padding-slide) * 0.5 - var(--font-size-meta) * 0.5);
+
+  /* colorset */
+  --col-mono-50: #f1f1f1;
+  --col-mono-100: #e5e5e5;
+  --col-mono-200: #c9c9c9;
+  --col-mono-300: #b0b0b0;
+  --col-mono-400: #989898;
+  --col-mono-500: #808080;
+  --col-mono-600: #666666;
+  --col-mono-700: #4b4b4b;
+  --col-mono-800: #323232;
+  --col-mono-900: #1d1d1d;
+  --col-mono-950: #111111;
+
+  width: 1920px;
+  height: 1080px;
+  padding: var(--padding-slide);
+
+  background-color: var(--col-mono-950);
+  color: var(--col-mono-100);
+
+  font-family: 'Roboto', sans-serif;
+  font-size: var(--font-size);
+  line-height: 1.6;
+
+  /* Invert color scheme for light background slides */
+  &:where(.invert) {
+    background-color: var(--col-mono-50);
+    color: var(--col-mono-900);
+  }
+}
+
+section[data-marpit-pagination="1"],
+section.center {
+  place-content: safe center;
+}
+
+section::after {
+  color: var(--col-mono-600);
+  font-size: var(--font-size-meta);
+  font-family: 'Roboto Mono', monospace;
+  position: absolute;
+  left: var(--padding-slide);
+  bottom: var(--dist-meta);
+  padding: 4px 16px;
+  border-radius: var(--border-radius);
+  width: fit-content;
+  background-color: var(--col-mono-900);
+  content: attr(data-marpit-pagination) ' · ' attr(data-marpit-pagination-total)
+}
+
+section:where(.invert)::after {
+  background-color: var(--col-mono-100);
+  color: var(--col-mono-500);
+}
+
+header,
+footer {
+  color: var(--col-mono-600);
+  font-size: var(--font-size-meta);
+  position: absolute;
+  right: var(--padding-slide);
+}
+
+header {
+  top: var(--dist-meta);
+}
+
+footer {
+  display: hidden;
+}
+
+footer.active {
+  color: var(--col-mono-50);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+h1 {
+  font-size: 64px;
+}
+
+h2 {
+  font-size: 48px;
+}
+
+ul,
+ol {
+  padding-left: 2em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+li {
+  margin-bottom: 0.5em;
+  line-height: 1.6;
+}
+
+li > p {
+  margin: 0.5em 0;
+}
+
+li ul,
+li ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+blockquote > p {
+  margin: 0;
+}
+
+blockquote {
+  margin: 0;
+  padding: var(--padding) calc(var(--padding) + 16px);
+  color: var(--col-mono-500);
+  background-color: var(--col-mono-900);
+  border-left: 4px solid var(--col-mono-500);
+  border-radius: var(--border-radius);
+  width: fit-content;
+}
+
+table + blockquote {
+  margin-top: var(--padding);
+}
+
+section:where(.invert) blockquote {
+  background-color: var(--col-mono-100);
+}
+
+code {
+  font-family: 'Roboto Mono', monospace;
+  font-size: calc(var(--font-size) * 0.96);
+  background-color: var(--col-mono-900);
+  border-radius: var(--border-radius);
+  margin: 8px;
+  padding: 8px 16px;
+}
+
+section:where(.invert) code {
+  background-color: var(--col-mono-100);
+}
+
+pre {
+  padding: var(--padding);
+  background-color: var(--col-mono-900);
+  border-radius: var(--border-radius);
+}
+
+section:where(.invert) pre {
+  background-color: var(--col-mono-100);
+}
+
+pre > code {
+  background-color: transparent;
+}
+
+
+img {
+  border: 2px solid;
+  object-fit: cover;
+  border-color: var(--col-mono-700);
+  border-radius: var(--border-radius);
+}
+
+img.pad {
+  padding: 16px;
+  border: 2px solid;
+  object-fit: cover;
+  border-color: var(--col-mono-700);
+  border-radius: var(--border-radius);
+}
+
+img.borderless {
+  border: none;
+  border-radius: 0;
+}
+
+a {
+  color: inherit;
+  font-family: inherit;
+
+}
+
+/* tables */
+
+table {
+  --table-border: var(--col-mono-700);
+  --table-head-bg: var(--col-mono-900);
+  --table-head-fg: var(--col-mono-400);
+  --table-row-odd: rgba(255, 255, 255, 0.03);
+  --table-row-divider: var(--col-mono-800);
+
+  display: table;
+  width: 100%;
+  min-width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: calc(var(--font-size) * 0.78);
+  line-height: 1.5;
+  border: 2px solid var(--table-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+table + table {
+  margin-top: var(--padding);
+}
+
+section:where(.invert) table {
+  --table-border: var(--col-mono-200);
+  --table-head-bg: var(--col-mono-100);
+  --table-head-fg: var(--col-mono-600);
+  --table-row-odd: rgba(0, 0, 0, 0.035);
+  --table-row-divider: var(--col-mono-200);
+}
+
+thead {
+  background-color: var(--table-head-bg);
+  color: var(--table-head-fg);
+  vertical-align: top;
+}
+
+tbody {
+  vertical-align: top;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: var(--table-row-odd);
+}
+
+th,
+td {
+  padding: 16px;
+  font-weight: 400;
+  border-bottom: 1px solid var(--table-row-divider);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* manually applied classes */
+
+.meta {
+  color: var(--col-mono-500);
+  font-size: var(--font-size-meta);
+}
+
+.sections {
+  position: absolute;
+  right: var(--padding-slide);
+  bottom: var(--dist-meta);
+
+  display: flex;
+  flex-direction: row;
+  
+  color: var(--col-mono-600);
+  font-size: var(--font-size-meta);
+
+  padding: 4px 16px;
+  border-radius: var(--border-radius);
+
+  background-color: var(--col-mono-900);
+}
+
+section:where(.invert) .sections {
+  background-color: var(--col-mono-100);
+  color: var(--col-mono-500);
+}
+
+.sections > *:not(:first-child)::before {
+  content: '/';
+  color: var(--col-mono-600);
+  margin: 16px;
+}
+
+section:where(.invert) .sections > *:not(:first-child)::before {
+  color: var(--col-mono-500);
+}
+
+.sections > .active {
+  color: var(--col-mono-50);
+}
+
+section:where(.invert) .sections > .active {
+  color: var(--col-mono-900);
+}
+
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* gap: var(--padding); */
+  gap: 320px;
+}
+
+.col-vert {
+  display: flex;
+  flex-direction: column;
+  gap: var(--padding);
+  height: 888px;
+}
+
+.col-vert img {
+  max-height: 100%;
+  height: auto;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, minmax(0, 380px));
+  gap: 16px;
+  /* height: 800px; */
+  width: 100%;
+  margin: auto;
+  place-content: center;
+}
+
+.image-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border: none;
+  border-radius: 0;
+}
+
+
+
+
