@@ -20,52 +20,53 @@ File Change History:
 
 | Date       | Change        | Author |
 | ---------- | ------------- | ------ |
+| 2026-05-04 | Minor Improvements | Malte   |
 | 2026-04-22 | First Version | Lena   |
 
-* [k.ai Developments](#kai-developments)
-    * [File Management](#file-management)
-* [What is k.ai?](#what-is-kai)
-    * [Vision \& Goals](#vision--goals)
-    * [Usage Scenarios](#usage-scenarios)
-        * [Must Haves](#must-haves)
-            * [1. Live Rehearsal Improvisation](#1-live-rehearsal-improvisation)
-            * [2. Digital Double Capturing](#2-digital-double-capturing)
-        * [Optional](#optional)
-    * [Avatar Configuration](#avatar-configuration)
-        * [Presets and Mappings](#presets-and-mappings)
-        * [Temporal Settings](#temporal-settings)
-* [System Architecture - 1. Live Rehearsal Improvisation](#system-architecture---1-live-rehearsal-improvisation)
-    * [Input / Output](#input--output)
-    * [Processing Steps](#processing-steps)
-    * [Modularization](#modularization)
-        * [Topology](#topology)
-    * [Architectural Layers](#architectural-layers)
-        * [Orchestration](#orchestration)
-        * [Preprocessing](#preprocessing)
-            * [Frame Extraction](#frame-extraction)
-            * [Audio Chunking](#audio-chunking)
-            * [Turn Detection](#turn-detection)
-            * [Additional Sensing](#additional-sensing)
-        * [STT](#stt)
-        * [Motion Estimation](#motion-estimation)
-        * [LLM](#llm)
-        * [TTS](#tts)
-        * [Avatar Engine](#avatar-engine)
-            * [Distortions](#distortions)
-        * [Control \& Configuration](#control--configuration)
-            * [GUI](#gui)
-            * [Input Files](#input-files)
-            * [Avatar Configuration and Prompt Library](#avatar-configuration-and-prompt-library)
-        * [Scene Recording](#scene-recording)
-* [System Architecture - 2. Digital Double Capturing](#system-architecture---2-digital-double-capturing)
-* [Open Questions](#open-questions)
-* [Risks](#risks)
-* [Work In Progress Tracking](#work-in-progress-tracking)
-    * [Active Tasks](#active-tasks)
-    * [Backlog](#backlog)
-    * [Done](#done)
-* [Glossary](#glossary)
-* [References \& Links](#references--links)
+- [k.ai Developments](#kai-developments)
+  - [File Management](#file-management)
+- [What is k.ai?](#what-is-kai)
+  - [Vision \& Goals](#vision--goals)
+  - [Usage Scenarios](#usage-scenarios)
+    - [Must Haves](#must-haves)
+      - [1. Live Rehearsal Improvisation](#1-live-rehearsal-improvisation)
+      - [2. Digital Double Capturing](#2-digital-double-capturing)
+    - [Optional](#optional)
+  - [Avatar Configuration](#avatar-configuration)
+    - [Presets and Mappings](#presets-and-mappings)
+    - [Temporal Settings](#temporal-settings)
+- [System Architecture - 1. Live Rehearsal Improvisation](#system-architecture---1-live-rehearsal-improvisation)
+  - [Input / Output](#input--output)
+  - [Processing Steps](#processing-steps)
+  - [Modularization](#modularization)
+    - [Topology](#topology)
+  - [Architectural Layers](#architectural-layers)
+    - [Orchestration](#orchestration)
+    - [Preprocessing](#preprocessing)
+      - [Frame Extraction](#frame-extraction)
+      - [Audio Chunking](#audio-chunking)
+      - [Turn Detection](#turn-detection)
+      - [Additional Sensing](#additional-sensing)
+    - [STT](#stt)
+    - [Motion Estimation](#motion-estimation)
+    - [LLM](#llm)
+    - [TTS](#tts)
+    - [Avatar Engine](#avatar-engine)
+      - [Distortions](#distortions)
+    - [Control \& Configuration](#control--configuration)
+      - [GUI](#gui)
+      - [Input Files](#input-files)
+      - [Avatar Configuration and Prompt Library](#avatar-configuration-and-prompt-library)
+    - [Scene Recording](#scene-recording)
+- [System Architecture - 2. Digital Double Capturing](#system-architecture---2-digital-double-capturing)
+- [Open Questions](#open-questions)
+- [Risks](#risks)
+- [Work In Progress Tracking](#work-in-progress-tracking)
+  - [Active Tasks](#active-tasks)
+  - [Backlog](#backlog)
+  - [Done](#done)
+- [Glossary](#glossary)
+- [References \& Links](#references--links)
 
 
 
@@ -73,7 +74,7 @@ File Change History:
 
 # What is k.ai?
 
-K.ai is a real-time generative AI system built for theatrical rehearsal and improvisation. It serves as an interactive, non-human scene partner for actors in an improvisation scenario. The system perceives audio and video from the rehearsal room, processes these signals through a multimodal pipeline, and responds with synthesized speech and a moving visual avatar, displayed, e.g., on a screen or being projected. The avatar is not a simulated actor but a deliberately distorted entity and its errors and non-human deviations are the artistic material, not defects to be corrected. The avatar's specific behavior, and appearance can be shaped and mutated by the humans during rehearsal.
+K.ai is a real-time generative AI system built for theatrical rehearsal and improvisation. It serves as an interactive, non-human scene partner for actors in an improvisation scenario. The system perceives audio and video from the rehearsal room, processes these signals through a multimodal pipeline, and responds with synthesized speech and a moving visual avatar, displayed, e.g., on a screen or being projected. The avatar is not a simulated actor but a deliberately distorted entity and its errors and non-human deviations are the artistic material, not defects to be corrected. The avatar's specific behavior, and appearance can be shaped and mutated by the humans (actors, director, stage designer ...) during rehearsal.
 
 The K.ai system is developed in the context the artistic-scientific research project [Kaspar 2028 - AI as a Theatrical Toolbox](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/image_and_space/detail/kaspar_2028.html), funded by the German Federal Cultural Foundation in the [Art & AI](https://www.kulturstiftung-des-bundes.de/en/programmes_projects/film_and_new_media/detail/kunst_und_ki.html). Hand in hand with the experimentation with K.ai, we are going to produce a repertoire-ready stage production of Peter Handke's *Kaspar* at the Residenztheater in Munich, in May 2028.
 
@@ -82,7 +83,7 @@ The K.ai system is developed in the context the artistic-scientific research pro
 The K.ai system should include the following features:
 
 * Live improvisation between a human performer and an algorithmic, virtual avatar in the rehearsal room
-* Experimentation with the progressiv distortion of the avatar into something alien and unstable
+* Experimentation with progressive distortion of the avatar into something alien and unstable
 * A pipeline that creates a digital double of a performer, to a degree recognizable in appearance and voice, to be used as avatar basis
 * Production of recordings of the avatar's performance for re-use
 * Operability without engineering competences
@@ -139,7 +140,7 @@ Input-output relations
 
 Behavior bundles
 * Predefined sets of behaviors (personality, mood, movement style, vocal character, etc.) that can be selected, switched and modified at runtime. 
-* Examples: animalistic movement patterns
+* Examples: animalistic movement patterns ("act like an elephant")
 
 
 ### Temporal Settings
@@ -205,10 +206,10 @@ Two possible topologies:
 
 | Mechanism                                                                                                                                                                                   | Benefits                                                                                                          | Tradeoff                                                                                                                                 |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Single workstation with multiple dedicated GPUs, data exchange via CUDA IPC or shared memory                                                                                                | <ul><li>Lowest latency</li></ul>                                                                                  | <ul><li>Highest cost and complexity</li><li>Most likely not feasible with the available resources (competencies, budget, etc.)</li></ul> |
-| Each segment as an independent server with OpenAI API compatible endpoint (the OpenAI schema as de facto standard for LLM, STT, and TTS services), IPC over local network (e.g. WebSockets) | <ul><li>Highest flexibility</li><li>Works with existing hardware</li><li>Allows fallback to hosted APIs</li></ul> | <ul><li>Network adds latency </li></ul>                                                                                                  |
+| Single workstation with multiple dedicated GPUs, data exchange via CUDA IPC or shared memory                                                                                                | - Lowest latency                                                                           | - Highest cost and complexity <br/>  - Most likely not feasible with the available resources (competencies, budget, etc.)|
+| Each segment as an independent server with OpenAI API compatible endpoint (the OpenAI schema as de facto standard for LLM, STT, and TTS services), IPC over local network (e.g. WebSockets) | - Highest flexibility  <br/>  - Works with existing hardware  <br/> - Allows fallback to hosted APIs | - Network adds latency                                                                   |
 
-Chosen Approach (22.04.2026): Each processing segment runs as an independent server.
+**Chosen Approach (22.04.2026):** Each processing segment runs as an independent server.
 
 
 
@@ -225,7 +226,7 @@ Chosen Approach (22.04.2026): Each processing segment runs as an independent ser
 | LLM                     | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                                     |
 | TTS                     | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                                             |
 | Avatar Engine           | Unreal Engine + MetaHuman, Vertex shaders, bone manipulation, ComfyUI             | LiveLink, FaceBuilder? <br /> Spout is Windows only, pinning this segment to a Windows node^1                                   |
-| Control & Configuration | *TBD*                                                                             | <ul><li>GUI controls</li><li>Configuration files</li><li>Avatar configuration and prompt library</li><li>Saved scenes</li></ul> |
+| Control & Configuration | *TBD*                                                                             | - GUI controls <br/> - Configuration files <br/> - Avatar configuration and prompt library <br/> - Saved scenes |
 | Scene Recording         | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                                     |
 
 ^1: Integration: capturing the Spout output in an external application (OBS, a Python script using spoutGL, etc.) and have that application publish to LiveKit, since no first party LiveKit Unreal plugin exists.
