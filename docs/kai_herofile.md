@@ -20,7 +20,7 @@ File Change History:
 
 | Date       | Change        | Author |
 | ---------- | ------------- | ------ |
-| 2026-05-04 | Minor Improvements | Malte   |
+| 2026-05-04 | Summary of Avatar Build & Minor Improvements | Malte   |
 | 2026-04-22 | First Version | Lena   |
 
 - [k.ai Developments](#kai-developments)
@@ -333,30 +333,25 @@ WebRTC (Web Real Time Communication) is a low latency protocol use by LiveKit fo
 
 ### Avatar Engine
 
-<span style="color:fuchsia">TODO</span>
+The Avatar Engine utilizes the [MetaHuman](https://www.metahuman.com) ecosystem within [Unreal Engine](https://www.unrealengine.com/) to create, animate, and stylistically manipulate digital clones of actors in real-time. By leveraging a suite of likeness tools, it bridges the gap between physical performance and high-fidelity virtual representation.
 
+**Base architecture:** [MetaHuman](https://www.metahuman.com) in [Unreal Engine](https://www.unrealengine.com/)
 
-Base architecture: [MetaHuman](https://www.metahuman.com) in [Unreal Engine](https://www.unrealengine.com/)
-
-Input:
-* Motion capture (TODO: how specifically?) via [LiveLink](https://dev.epicgames.com/documentation/unreal-engine/live-link-in-unreal-engine) in Unreal Engine
-* Face mesh via [FaceBuilder](https://keentools.io/products/facebuilder-for-blender) (paid) (TODO: does what exactly?)
-
+**Input:**
+* **Motion capture:** Real-time skeletal and facial data streamed via the **LiveLink** protocol, utilizing sources like the **Live Link Face iOS app**, **camera feed** or **MoCap suits''
+* **Face mesh via [FaceBuilder](https://keentools.io/products/facebuilder-for-blender)** or **Photogrammetry** to refine facial geometry and likeness by transfering 2D reference photos to a 3D head mesh, which is then solved into a **MetaHuman Identity**
 
 #### Distortions
 
-<span style="color:fuchsia">TODO</span>
+A modular distortion layer is applied to the avatar's output after the animation data has been processed.
 
+This ensures that the actor's performance and underlying "body language" remain intact even as the visual representation is radically transformed.
 
-Distortion layer (applied after animation):  
-1. Bone transform manipulation of the rig
-2. Scrambled LiveLink association (e.g. left eye controls right arm)
-3. Vertex shader deformations
-
-
-* [Spout](https://spout.zeal.co/) for GPU video buffer sharing between Windows applications
-* ComfyUI Spout Nodes enable real-time Stable Diffusion generation on the UE output image
-
+**Distortion layer (applied after animation):**  
+1. **Mesh distortion:** Real-time scaling and rotation of the skeletal rig
+2. **Vertex shader deformations:** Deforming the mesh geometry directly on the GPU for non-linear warping
+3. **Neural Style Transfer & Diffusion:** Using **ONNX** within UE or transferring framebuffers to **ComfyUI** for real-time AI-driven restyling
+4. **Scrambled LiveLink association:** Re-mapping input data to different output targets (e.g., using eye movement to drive arm transforms)
 
 [Further Information ➚](./improv/layer/kai_layer_avatar_engine.md)
 
