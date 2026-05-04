@@ -348,25 +348,25 @@ The Avatar Engine utilizes the [MetaHuman](https://www.metahuman.com) ecosystem 
 
 #### Animations
 
-Driving MetaHumans requires a multi-modal approach to balance real-time performance with high-fidelity input [cite: 1].
+Driving MetaHumans requires a multi-modal approach to balance real-time performance with high-fidelity input
 
 #### Input & Blending
-* **LiveLink:** The standard interface for streaming real-time facial (ARKit), body (MoCap), and camera data directly into Unreal Engine [cite: 1].
-* **Pre-Built Animations:** Uses UE Blendspaces to interpolate between existing animations [cite: 1]. 
-* **Bottleneck:** Creating a comprehensive library of pre-built animations remains a significant manual labor challenge [cite: 1].
+* **LiveLink:** The standard interface for streaming real-time facial (ARKit), body (MoCap), and camera data directly into Unreal Engine
+* **Pre-Built Animations:** Uses UE Blendspaces to interpolate between existing animations
+* **Bottleneck:** Creating a comprehensive library of pre-built animations remains a significant manual labor challenge
 
 #### Procedural & AI-Driven Animation
-Modern pipelines focus on generating expressive movement from audio or text to bypass manual rigging constraints [cite: 1].
+Modern pipelines focus on generating expressive movement from audio or text to bypass manual rigging constraints
 
 ##### Facial Animation (Audio-to-Face)
-* **MetaHuman Animator:** A native UE plugin providing real-time audio-to-mouth movement, though it often lacks emotional depth and micro-expressions [cite: 1].
-* **NVIDIA Audio2Face:** Generates highly expressive, AI-driven facial animations from audio sources in real-time [cite: 1].
+* **MetaHuman Animator:** A native UE plugin providing real-time audio-to-mouth movement, though it often lacks emotional depth and micro-expressions
+* **NVIDIA Audio2Face:** Generates highly expressive, AI-driven facial animations from audio sources in real-time
 
 ##### Full-Body & Gestural Generation
-* **NVIDIA Kimodo:** A full-rig diffusion model that generates skeletal animation from text prompts; operates at near real-time (~2–5s) and requires rig retargeting [cite: 1].
-* **NVIDIA ACE (Avatar Cloud Engine):** A comprehensive workflow integrating NLP, LLM logic, and automated facial animation drivers [cite: 1].
-* **DiDiffGes (SOTA 2025):** Real-time speech-to-gesture generation using an efficient 10-step sampling process [cite: 1].
-* **AsynFusion (SOTA 2025):** Synchronizes parallel facial and body animation for natural cohesion, currently limited to non-real-time contexts [cite: 
+* **NVIDIA Kimodo:** A full-rig diffusion model that generates skeletal animation from text prompts; operates at near real-time (~2–5s) and requires rig retargeting
+* **NVIDIA ACE (Avatar Cloud Engine):** A comprehensive workflow integrating NLP, LLM logic, and automated facial animation drivers
+* **DiDiffGes (SOTA 2025):** Real-time speech-to-gesture generation using an efficient 10-step sampling process
+* **AsynFusion (SOTA 2025):** Synchronizes parallel facial and body animation for natural cohesion, currently limited to non-real-time contexts
 
 #### Distortions
 
