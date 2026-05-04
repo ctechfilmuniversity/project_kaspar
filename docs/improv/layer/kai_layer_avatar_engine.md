@@ -24,6 +24,70 @@ File Change History:
 
 ## Building an Avatar
 
+![MetaHuman Avatar Example](../../img/avatar_metahuman_example_01.gif)
+
+A variety of tools with varying degrees of complexity can be used to produce a MetaHuman Identity which Unreal Engine can animate. Likeness to an actor can be achieved via manual labor and comparison or a more advanced technical pipeline.
+
+### Key Concepts & Definitions
+
+* **MetaHuman Identity:** A specialized asset in UE that acts as a "bridge." it maps a unique 3D mesh (from a scan or photo) to the standardized MetaHuman topology
+* **MetaHuman DNA:** The underlying data file that contains the specific vertex positions, rig constraints, and animation logic for a character. It ensures the avatar behaves realistically regardless of its shape
+* **Mesh to MetaHuman:** The automated process within Unreal Engine that "wraps" the standard MetaHuman topology onto a custom 3D scan
+
+### "Standard" Method: MetaHuman Creator (MHC)
+
+* **Preset Start:** Choose from a library of diverse humans
+* **Sculpting:** Manually adjust features using a sculpt tool or by blending between different preset faces
+
+### Advanced Methods of Cloning a Human
+
+#### MetaHuman Animator ([Live Link Face for iOS](https://apps.apple.com/us/app/live-link-face/id1495370836))
+Uses the TrueDepthfront camera of  an iPhone to capture facial geometry
+
+The actor performs a neutral pose and a profile turn in the MetaHuman Live Link app. The data is sent to UE to solve the MetaHuman Identity
+
+👍 Extremely fast; captures the general mesh
+
+👎 Can not transfer a texture
+
+#### Photogrammetry ([RealityScan](https://www.realityscan.com/) / [Meshroom](https://meshroom.org/))
+The most high-fidelity method, involving 50–200 high-resolution photos of the actor.
+
+Photos are processed into a dense point cloud and then a high-poly mesh. This mesh is imported into UE as the source for a MetaHuman Identity
+
+👍 Captures the detailled mesh; captures detailled texture
+
+👎 Hard to automate; slow and tedious process; need to transfer the texture on the complex MetaHuman UV map (unclear, need to try)
+
+#### [FaceBuilder](https://keentools.io/products/facebuilder-for-blender) by KeenTools
+
+A plugin for Blender that allows for "manual photogrammetry" from a limited set of photos
+
+Align a base head model to 2D photos by placing "pins" on features (nose, eyes, lips)
+
+👍 Great for when you cannot perform a live scan and only have reference photography; produces a very clean mesh that is easy for the MetaHuman solver to process
+
+👎 Manual labor, time intense
+
+#### OpenCV Pose Estimation (Skeletal Scaling)
+
+OpenCV can be used to match the body proportions
+
+Webcam feed of the actor is processed using OpenCV to extract specific metrics: total height, arm length, and shoulder width
+
+Ratios are used to drive the "Body" selection in MHC or procedurally scale the skeletal bones in the UE Blueprint Construction Script
+
+### Comparison & Combination
+
+| Method | Accuracy | Setup Time | Complexity | Best For |
+| :--- | :--- | :--- | :--- | :--- |
+| **MHC Only** | Low | Low | Low | Generic background characters |
+| **iOS Link** | Medium | Medium | Low | Rapid prototyping/Live rehearsal |
+| **FaceBuilder** | Medium-High | High | Medium | When actor is not physically present |
+| **Photogrammetry** | Ultra-High | Very High | High | Hero "Clones" for close-ups |
+
+**Combining Tools:** In practice, **FaceBuilder / iOS link** used to get the facial structure right, **Photogrammetry** for the skin textures, and **OpenCV** to ensure the avatar's height matches the physical actor on stage
+
 ## Animating an Avatar
 
 ### LiveLink
@@ -125,3 +189,11 @@ The vertex shader of a MetaHuman can be dsiplaced to transform the mesh.
 Using Unreal Engine's Neural Post Processing, [ONXX](https://onnx.ai/) Style Transfer of the framebuffer is possible within the Engine.
 
 This is significantly faster than applying a style transfer on the framebuffer: The render pipeline does not need to render a high-quality MetaHuman first, just for it to be processsed again!
+
+### Scrambled LiveLink association
+
+e.g.: left eye controls right arm
+
+### Framebuffer to Image2Image Diffusion
+
+By [transfering a framebuffer](#Transfering-Framebuffers) to [ComfyUI](https://www.comfyai.org/index.html), the output of the render can be used as basis to generate an image.
