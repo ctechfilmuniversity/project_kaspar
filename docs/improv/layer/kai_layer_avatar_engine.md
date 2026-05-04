@@ -12,6 +12,41 @@ Unreal Engine's [MetaHumans](https://www.metahuman.com/) are used to quickly bui
 
 The integreation deep into the UE systems makes it feasible to render high-quality avatars in real-time using UE's various systems optimized for real-time rendering in virtual production contexts.
 
+- [Avatar Engine](#avatar-engine)
+  - [File Management](#file-management)
+  - [Building an Avatar](#building-an-avatar)
+    - [Key Concepts \& Definitions](#key-concepts--definitions)
+    - ["Standard" Method: MetaHuman Creator (MHC)](#standard-method-metahuman-creator-mhc)
+    - [Advanced Methods of Cloning a Human](#advanced-methods-of-cloning-a-human)
+      - [MetaHuman Animator (Live Link Face for iOS)](#metahuman-animator-live-link-face-for-ios)
+      - [Photogrammetry (RealityScan / Meshroom)](#photogrammetry-realityscan--meshroom)
+      - [FaceBuilder by KeenTools](#facebuilder-by-keentools)
+      - [OpenCV Pose Estimation (Skeletal Scaling)](#opencv-pose-estimation-skeletal-scaling)
+    - [Comparison \& Combination](#comparison--combination)
+  - [Animating an Avatar](#animating-an-avatar)
+    - [LiveLink](#livelink)
+    - [Pre-Built Animations](#pre-built-animations)
+    - [Proceudrally Generating Animations](#proceudrally-generating-animations)
+      - [MetaHuman Animator: Audio to Animation](#metahuman-animator-audio-to-animation)
+      - [NVIDIA Audio2Face](#nvidia-audio2face)
+      - [NVIDIA Kimodo - Full-Rig Diffusion Model](#nvidia-kimodo---full-rig-diffusion-model)
+      - [NVIDIA ACE (Avatar Cloud Engine)](#nvidia-ace-avatar-cloud-engine)
+      - [State of the Art: DiDiffGes (2025)](#state-of-the-art-didiffges-2025)
+      - [State of the Art: AsynFusion (2025)](#state-of-the-art-asynfusion-2025)
+  - [Sending Data](#sending-data)
+    - [Transfering Framebuffers](#transfering-framebuffers)
+      - [**Spout (Windows)**](#spout-windows)
+      - [**Syphon (MacOS)**](#syphon-macos)
+      - [**NDI: Network Device Interface (Cross-Platform)**](#ndi-network-device-interface-cross-platform)
+      - [**Native Unreal Alternative: Pixel Streaming**](#native-unreal-alternative-pixel-streaming)
+    - [Animation Data](#animation-data)
+  - [Distorting an Avatar](#distorting-an-avatar)
+    - [Mesh Distortion](#mesh-distortion)
+    - [(Vertex) Shader Distortion](#vertex-shader-distortion)
+    - [Neural Style Transfer](#neural-style-transfer)
+    - [Scrambled LiveLink association](#scrambled-livelink-association)
+    - [Framebuffer to Image2Image Diffusion](#framebuffer-to-image2image-diffusion)
+
 ## File Management
 
 **Authors:** Malte Hillebrand
@@ -96,19 +131,66 @@ Common interface for streaming and consuming animation data from external source
 
 A variety of sources can be used to drive a variety of subjects. Some input can move a camera within the engine, a webcam feed can drive a MetaHuman's facial mesh, a MoCap suit can move a MetaHuman's skeleton
 
-### Audio to Animation (MetaHuman Animator)
-
-Native MetaHuman plugin to process audio and build facial animations to be used to move a MetaHuan face mesh.
-
-Also works in real-time!
-
-_Lacks a bit of "depth", mostly just mouth movement, not really emotional changes to a face (frowning etc.)_
-
 ### Pre-Built Animations
 
 By pre-building animations and interpolating between them using UE's Blendspace, complex and unique movement can be achieved.
 
 _Problem: Pre-building lots of animations_
+
+### Proceudrally Generating Animations
+
+Generating rig-animations needs to balance generation time and quality.
+
+Complex full-rig animations don't seem to be feasible in real-time yet, while face mesh animation from an audiostream seems to be doable.
+
+#### MetaHuman Animator: Audio to Animation
+
+Native MetaHuman plugin to process audio and build facial animations to be used to move a MetaHuan face mesh.
+
+Works in real-time!
+
+_Lacks a bit of "depth", mostly just mouth movement, not really emotional changes to a face (frowning etc.)_
+
+
+#### [NVIDIA Audio2Face](https://www.nvidia.com/en-us/omniverse/apps/audio2face.md/)
+
+Is able to generate expressive facial animation from an audio source in real-time
+
+#### [NVIDIA Kimodo](https://research.nvidia.com/labs/sil/projects/kimodo/) - Full-Rig Diffusion Model
+
+Generates a full skeleton animation from a text prompt
+
+- Reasonably fast, but not real-time (~2-5 seconds)
+- Does not natively work with UE MetaHuman#s rig (uses SOMA rig, has to be retargeted)
+
+#### [NVIDIA ACE](https://developer.nvidia.com/ace-for-games) (Avatar Cloud Engine)
+
+Bit hard for me to fully grasp, but seems to be a complete workflow that does:
+
+1. NLP from voice input
+2. Generate LLM output
+3. Output TTS and drive facial animations using Audio2Face in real-time
+4. Chose and blend between pre-defined animations appropriate to generated answer
+
+#### State of the Art: [DiDiffGes](https://arxiv.org/abs/2503.17059) (2025)
+
+Can generate gestures from speech with just 10 sampling steps.
+Decouples gesture data into body and hand distributions
+
+Claims to be real-time!
+
+Demo: https://cyk990422.github.io/DIDiffGes/
+
+
+
+#### State of the Art: [AsynFusion](https://arxiv.org/abs/2505.15058) (2025)
+
+Enables paralell generation of facial and body animation, running a syncrhonization between them to relate their dependencies.
+
+Claims to generate more cohesive / "natural" full body animations from a single audio stream.
+
+Does not seem to work in real-time.
+
 
 ## Sending Data
 
