@@ -16,3 +16,7 @@ Real-time avatars, which understand and answer to user input with gestures, mimi
 ### [NVIDIA ACE Product Page](https://developer.nvidia.com/ace-for-games)
 
 ### [NVIDIA ACE Overview](https://docs.nvidia.com/ace/overview/2025.04.28/index.html#nvidia-ace)
+
+Animations are pre-made and then appropriatly chosen by the LLM.
+
+An animation mixer is used to blend between them.
