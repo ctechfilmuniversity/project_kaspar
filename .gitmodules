@@ -4,3 +4,6 @@
 [submodule "modules/kai-tts"]
 	path = modules/kai-tts
 	url = https://github.com/whatphilipcodes/kai-tts
+[submodule "modules/kimodo_playground"]
+	path = modules/kimodo_playground
+	url = https://github.com/etlam21/kimodo_playground
