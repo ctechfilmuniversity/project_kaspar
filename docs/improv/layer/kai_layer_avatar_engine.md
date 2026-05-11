@@ -181,6 +181,8 @@ Claims to be real-time!
 
 Demo: https://cyk990422.github.io/DIDiffGes/
 
+! WAS MERGED WITH ANOTHER PAPER ("HoleGest") INTO ["Efficient-Audio-Gesture"](https://github.com/whuhxb/Efficient-Audio-Gesture)
+
 
 
 #### State of the Art: [AsynFusion](https://arxiv.org/abs/2505.15058) (2025)
