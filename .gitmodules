@@ -1,0 +1,6 @@
+[submodule "modules/kai-llm"]
+	path = modules/kai-llm
+	url = https://github.com/whatphilipcodes/kai-llm
+[submodule "modules/kai-tts"]
+	path = modules/kai-tts
+	url = https://github.com/whatphilipcodes/kai-tts
