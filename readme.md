@@ -23,6 +23,18 @@ When cloning the parent repository (this repo), submodules will show up as empty
 git submodule init && git submodule update
 ```
 
+To remove a submodule if it is no longer used run the following commands:
+
+```sh
+git submodule deinit -f path/to/submodule
+```
+
+```sh
+git rm -f path/to/submodule
+```
+
+
+
 ### staff
 
 > contains personal files, thoughts or materials by each individual staff member
