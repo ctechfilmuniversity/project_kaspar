@@ -165,12 +165,30 @@ Generates a full skeleton animation from a text prompt
 
 ##### First Test with Kimodo -> Blender for conversion into FBX animation -> Retargetting in Unreal Engine to MetaHuman
 
-Generation time for 10 animations in batch:  25.99s
-Average: 2.6 secs
-Time to Load Model:  23.76s
+NVIDIA Kimodo can export as .BVH file, a motion capture file format.
 
-Result:
-![Kimodo 1st Test](../../img/avatar_kimodo_test01.gif)
+- Generation time for 10 animations in batch:  25.99s
+- Average: 2.6 secs
+- Time to Load Model:  23.76s
+- Device: NVIDIA GeForce RTX 4090
+
+Unreal Engine can NOT natively read .BVH files, but Blender can.
+
+Blender is used to convert the .BVH files into .FBX files with the animation baked in.
+
+To import properly into Unreal Engine a dummy skeleton (cube) is attached to the rig in Blender. This way Unreal Engine recognizes the animation as a skeleton aninmation.
+
+The Kimodo skeleton differs from the UE MetaHuman skeleton. For the re-targeting, each chain of bones in the Kimodo rig has to be named after the chains in the UE MetaHuman rig. Some auto-chaining can be used, but it failed more often than it simplified the process.
+
+BUT: After doing the process ONCE for the Kimodo skeleton, it can be used when importing all other .FBX converted animations WITHOUT MANUAL RE-TARGETING!
+
+The animations are than automatically re-targeted using the existing skeleton and exported as rig animation sequences.
+
+These animation sequences have then to be assigned to the MetaHuman skeleton to be able to drive the MetaHuman mesh.
+
+
+26/05/13 - Results with little re-targeted bones and therefore buggy behaviour, first tests of the pipeline:
+![Kimodo 1st Test](../../img/avatar_kimodo_test_250512.gif)
 
 #### [NVIDIA ACE](https://developer.nvidia.com/ace-for-games) (Avatar Cloud Engine)
 
