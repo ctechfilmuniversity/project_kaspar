@@ -10,3 +10,6 @@
 [submodule "modules/kai-core"]
 	path = modules/kai-core
 	url = https://github.com/whatphilipcodes/kai-core
+[submodule "modules/kai-avatar-animation"]
+	path = modules/kai-avatar-animation
+	url = https://github.com/etlaM21/kai-avatar-animation
