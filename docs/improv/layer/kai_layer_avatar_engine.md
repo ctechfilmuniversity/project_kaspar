@@ -163,6 +163,15 @@ Generates a full skeleton animation from a text prompt
 - Reasonably fast, but not real-time (~2-5 seconds)
 - Does not natively work with UE MetaHuman#s rig (uses SOMA rig, has to be retargeted)
 
+##### First Test with Kimodo -> Blender for conversion into FBX animation -> Retargetting in Unreal Engine to MetaHuman
+
+Generation time for 10 animations in batch:  25.99s
+Average: 2.6 secs
+Time to Load Model:  23.76s
+
+Result:
+![Kimodo 1st Test](../../img/avatar_kimodo_test01.gif)
+
 #### [NVIDIA ACE](https://developer.nvidia.com/ace-for-games) (Avatar Cloud Engine)
 
 Bit hard for me to fully grasp, but seems to be a complete workflow that does:
