@@ -190,6 +190,9 @@ These animation sequences have then to be assigned to the MetaHuman skeleton to 
 26/05/13 - Results with little re-targeted bones and therefore buggy behaviour, first tests of the pipeline:
 ![Kimodo 1st Test](../../img/avatar_kimodo_test_250512.gif)
 
+26/05/18 - Results with proper re-targeted bones and (hands and feet need further improvement)
+![Kimodo 1st Test](../../img/avatar_kimodo_test_250518.gif)
+
 #### [NVIDIA ACE](https://developer.nvidia.com/ace-for-games) (Avatar Cloud Engine)
 
 Bit hard for me to fully grasp, but seems to be a complete workflow that does:
