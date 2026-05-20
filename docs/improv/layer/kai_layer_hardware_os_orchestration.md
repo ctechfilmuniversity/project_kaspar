@@ -69,7 +69,19 @@ File Change History:
 
 > ~ 8.900 €
 
+#### Config 03
 
+> [NVIDIA DGX Spark](https://www.nvidia.com/de-de/products/workstations/dgx-spark/)
 
+[`Aktuelles Angebot`](https://www.idealo.de/preisvergleich/OffersOfProduct/208146353_-dgx-spark-founders-edition-940-54242-0005-000-nvidia.html)
 
+Es handelt sich hierbei um spezialisierte KI Hardware auf der eine NVIDIA spezifische Linux Distro vorinstalliert ist. Es stehen ca. ~ 96 GB VRAM pro Einheit zur Verfügung allerdings ist der Datendurchsatz geringer (273 GB/s vs 1,000 GB/s) als bei herkömmlichen Gaming GPUs von NVIDIA. Die gesamte STT -> LLM -> TTS Pipeline sollte in der Theorie in diesem Rahmen lauffähig sein.
 
+> ~ 4.900 €
+
+Im Rahmen des Budgets könnten 2 Einheiten angeschafft werde. Diese sind auch über das k.ai Projekt hinaus für Finetuning und andere interaktive Projekte die auf lokale KI setzen möchten im Rahmen von Creative Technologies sehr interessant.
+
+Nachteile:
+
+- Unreal benötigt separate Recheneinheit aufgrund von Hardware-Inkompatibilität
+- Die Inferenz insgesamt ist langsamer als auf Gaming Hardware (Datendurchsatz)
