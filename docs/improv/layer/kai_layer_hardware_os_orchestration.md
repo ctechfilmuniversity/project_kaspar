@@ -15,6 +15,7 @@ File Change History:
 | Date       | Change                  | Author |
 | ---------- | ----------------------- | ------ |
 | 2026-05-11 | Gemeinsame Überlegungen | Philip |
+| 2026-05-22 | Spark                   | Philip |
 
 
 ### Hardware Anschaffungsempfehlungen
