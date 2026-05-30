@@ -11,5 +11,5 @@
 	path = modules/kai-avatar-animation
 	url = https://github.com/etlaM21/kai-avatar-animation
 [submodule "kai-temp-website"]
-	path = kai-temp-website
+	path = modules/kai-temp-website
 	url = https://github.com/etlaM21/kai-temp-website.git
