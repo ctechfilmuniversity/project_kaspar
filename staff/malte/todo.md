@@ -1,4 +1,7 @@
-##2 26/06/02:
+## 26/06/10:
+1. Further Prompt Investigation
+
+## 26/06/02:
 1. Test NVIDIA Audio2Face Audiostreaming
 2. Batch-Test KIMODO prompting ("A person moves/acts/impersonates a bear" etc.) and compare results
 3. Networking Architecture for LiveLink Retargetting so KIMODO can adjust play animation with UE in Play Mode
