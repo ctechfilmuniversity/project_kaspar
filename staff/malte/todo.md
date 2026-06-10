@@ -1,5 +1,6 @@
 ## 26/06/10:
-1. Further Prompt Investigation
+1. Further Prompt Investigation w/ seed fixing
+2. Test & Plan possibility of Mirroring
 
 ## 26/06/02:
 1. Test NVIDIA Audio2Face Audiostreaming
