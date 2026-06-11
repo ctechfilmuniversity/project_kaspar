@@ -18,10 +18,11 @@ This file `kai_herofile.md` summarizes all topics into a single informed overvie
 
 File Change History:
 
-| Date       | Change        | Author |
-| ---------- | ------------- | ------ |
-| 2026-05-04 | Summary of Avatar Build & Minor Improvements | Malte   |
-| 2026-04-22 | First Version | Lena   |
+| Date       | Change                                                                                  | Author |
+| ---------- | --------------------------------------------------------------------------------------- | ------ |
+| 2026-06-11 | Avatar Animation Pipeline (+ Metrics ) added under new subpage "Layer Avatar Animation" | Malte  |
+| 2026-05-04 | Summary of Avatar Build & Minor Improvements                                            | Malte  |
+| 2026-04-22 | First Version                                                                           | Lena   |
 
 - [k.ai Developments](#kai-developments)
   - [File Management](#file-management)
@@ -209,10 +210,10 @@ Input triggers are understood as both
 
 Two possible topologies:
 
-| Mechanism                                                                                                                                                                                   | Benefits                                                                                                          | Tradeoff                                                                                                                                 |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Single workstation with multiple dedicated GPUs, data exchange via CUDA IPC or shared memory                                                                                                | - Lowest latency                                                                           | - Highest cost and complexity <br/>  - Most likely not feasible with the available resources (competencies, budget, etc.)|
-| Each segment as an independent server with OpenAI API compatible endpoint (the OpenAI schema as de facto standard for LLM, STT, and TTS services), IPC over local network (e.g. WebSockets) | - Highest flexibility  <br/>  - Works with existing hardware  <br/> - Allows fallback to hosted APIs | - Network adds latency                                                                   |
+| Mechanism                                                                                                                                                                                   | Benefits                                                                                             | Tradeoff                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Single workstation with multiple dedicated GPUs, data exchange via CUDA IPC or shared memory                                                                                                | - Lowest latency                                                                                     | - Highest cost and complexity <br/>  - Most likely not feasible with the available resources (competencies, budget, etc.) |
+| Each segment as an independent server with OpenAI API compatible endpoint (the OpenAI schema as de facto standard for LLM, STT, and TTS services), IPC over local network (e.g. WebSockets) | - Highest flexibility  <br/>  - Works with existing hardware  <br/> - Allows fallback to hosted APIs | - Network adds latency                                                                                                    |
 
 **Chosen Approach (22.04.2026):** Each processing segment runs as an independent server.
 
@@ -220,19 +221,19 @@ Two possible topologies:
 
 ## Architectural Layers
 
-| Layer                   | Tech                                                                              | Notes                                                                                                                           |
-| ----------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Hardware                | Multiple workstations with dedicated GPUs                                         | One per segment, distributed via local network                                                                                  |
-| OS                      | *TBD:* Linux for inference segments, Windows for the Avatar engine and distortion | Windows constraint comes from the Spout dependency                                                                              |
-| Orchestration           | LiveKit Agents                                                                    | Pipeline management across all processing steps                                                                                 |
-| Preprocessing           | *TBD*                                                                             | Frame extraction, audio chunking, turn detection, additional sensing signals                                                    |
-| STT                     | *TBD*                                                                             | Candidates: Whisper, faster-whisper, Gemma 4 native audio                                                                       |
-| Motion Estimation       | *TBD*                                                                             | Drives indirect input from camera feed                                                                                          |
-| LLM                     | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                                     |
-| TTS                     | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                                             |
-| Avatar Engine           | Unreal Engine + MetaHuman, Vertex shaders, bone manipulation, ComfyUI             | LiveLink, FaceBuilder? <br /> Spout is Windows only, pinning this segment to a Windows node^1                                   |
+| Layer                   | Tech                                                                              | Notes                                                                                                           |
+| ----------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Hardware                | Multiple workstations with dedicated GPUs                                         | One per segment, distributed via local network                                                                  |
+| OS                      | *TBD:* Linux for inference segments, Windows for the Avatar engine and distortion | Windows constraint comes from the Spout dependency                                                              |
+| Orchestration           | LiveKit Agents                                                                    | Pipeline management across all processing steps                                                                 |
+| Preprocessing           | *TBD*                                                                             | Frame extraction, audio chunking, turn detection, additional sensing signals                                    |
+| STT                     | *TBD*                                                                             | Candidates: Whisper, faster-whisper, Gemma 4 native audio                                                       |
+| Motion Estimation       | *TBD*                                                                             | Drives indirect input from camera feed                                                                          |
+| LLM                     | *TBD*                                                                             | Preference: local inference, OpenAI compatible endpoint, permissive license                                     |
+| TTS                     | *TBD*                                                                             | Candidates: Fish Audio S2 Pro (license TBD), others                                                             |
+| Avatar Engine           | Unreal Engine + MetaHuman, Vertex shaders, bone manipulation, ComfyUI             | LiveLink, FaceBuilder? <br /> Spout is Windows only, pinning this segment to a Windows node^1                   |
 | Control & Configuration | *TBD*                                                                             | - GUI controls <br/> - Configuration files <br/> - Avatar configuration and prompt library <br/> - Saved scenes |
-| Scene Recording         | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                                     |
+| Scene Recording         | *TBD*                                                                             | Format and storage layer for stored scenes referenced below                                                     |
 
 ^1: Integration: capturing the Spout output in an external application (OBS, a Python script using spoutGL, etc.) and have that application publish to LiveKit, since no first party LiveKit Unreal plugin exists.
 

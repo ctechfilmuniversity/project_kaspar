@@ -23,16 +23,6 @@ The integreation deep into the UE systems makes it feasible to render high-quali
       - [FaceBuilder by KeenTools](#facebuilder-by-keentools)
       - [OpenCV Pose Estimation (Skeletal Scaling)](#opencv-pose-estimation-skeletal-scaling)
     - [Comparison \& Combination](#comparison--combination)
-  - [Animating an Avatar](#animating-an-avatar)
-    - [LiveLink](#livelink)
-    - [Pre-Built Animations](#pre-built-animations)
-    - [Proceudrally Generating Animations](#proceudrally-generating-animations)
-      - [MetaHuman Animator: Audio to Animation](#metahuman-animator-audio-to-animation)
-      - [NVIDIA Audio2Face](#nvidia-audio2face)
-      - [NVIDIA Kimodo - Full-Rig Diffusion Model](#nvidia-kimodo---full-rig-diffusion-model)
-      - [NVIDIA ACE (Avatar Cloud Engine)](#nvidia-ace-avatar-cloud-engine)
-      - [State of the Art: DiDiffGes (2025)](#state-of-the-art-didiffges-2025)
-      - [State of the Art: AsynFusion (2025)](#state-of-the-art-asynfusion-2025)
   - [Sending Data](#sending-data)
     - [Transfering Framebuffers](#transfering-framebuffers)
       - [**Spout (Windows)**](#spout-windows)
@@ -53,9 +43,10 @@ The integreation deep into the UE systems makes it feasible to render high-quali
 
 File Change History:
 
-| Date       | Change        | Author |
-| ---------- | ------------- | ------ |
-| 2026-05-04 | First Version | Malte  |
+| Date       | Change                            | Author |
+| ---------- | --------------------------------- | ------ |
+| 2026-06-11 | Seperated Animation of the Avatar | Malte  |
+| 2026-05-04 | First Version                     | Malte  |
 
 ## Building an Avatar
 
@@ -114,115 +105,14 @@ Ratios are used to drive the "Body" selection in MHC or procedurally scale the s
 
 ### Comparison & Combination
 
-| Method | Accuracy | Setup Time | Complexity | Best For |
-| :--- | :--- | :--- | :--- | :--- |
-| **MHC Only** | Low | Low | Low | Generic background characters |
-| **iOS Link** | Medium | Medium | Low | Rapid prototyping/Live rehearsal |
-| **FaceBuilder** | Medium-High | High | Medium | When actor is not physically present |
-| **Photogrammetry** | Ultra-High | Very High | High | Hero "Clones" for close-ups |
+| Method             | Accuracy    | Setup Time | Complexity | Best For                             |
+| :----------------- | :---------- | :--------- | :--------- | :----------------------------------- |
+| **MHC Only**       | Low         | Low        | Low        | Generic background characters        |
+| **iOS Link**       | Medium      | Medium     | Low        | Rapid prototyping/Live rehearsal     |
+| **FaceBuilder**    | Medium-High | High       | Medium     | When actor is not physically present |
+| **Photogrammetry** | Ultra-High  | Very High  | High       | Hero "Clones" for close-ups          |
 
 **Combining Tools:** In practice, **FaceBuilder / iOS link** used to get the facial structure right, **Photogrammetry** for the skin textures, and **OpenCV** to ensure the avatar's height matches the physical actor on stage
-
-## Animating an Avatar
-
-### LiveLink
-
-Common interface for streaming and consuming animation data from external sources into Unreal Engine.
-
-A variety of sources can be used to drive a variety of subjects. Some input can move a camera within the engine, a webcam feed can drive a MetaHuman's facial mesh, a MoCap suit can move a MetaHuman's skeleton
-
-### Pre-Built Animations
-
-By pre-building animations and interpolating between them using UE's Blendspace, complex and unique movement can be achieved.
-
-_Problem: Pre-building lots of animations_
-
-### Proceudrally Generating Animations
-
-Generating rig-animations needs to balance generation time and quality.
-
-Complex full-rig animations don't seem to be feasible in real-time yet, while face mesh animation from an audiostream seems to be doable.
-
-#### MetaHuman Animator: Audio to Animation
-
-Native MetaHuman plugin to process audio and build facial animations to be used to move a MetaHuan face mesh.
-
-Works in real-time!
-
-_Lacks a bit of "depth", mostly just mouth movement, not really emotional changes to a face (frowning etc.)_
-
-
-#### [NVIDIA Audio2Face](https://www.nvidia.com/en-us/omniverse/apps/audio2face.md/)
-
-Is able to generate expressive facial animation from an audio source in real-time
-
-#### [NVIDIA Kimodo](https://research.nvidia.com/labs/sil/projects/kimodo/) - Full-Rig Diffusion Model
-
-Generates a full skeleton animation from a text prompt
-
-- Reasonably fast, but not real-time (~2-5 seconds)
-- Does not natively work with UE MetaHuman#s rig (uses SOMA rig, has to be retargeted)
-
-##### First Test with Kimodo -> Blender for conversion into FBX animation -> Retargetting in Unreal Engine to MetaHuman
-
-NVIDIA Kimodo can export as .BVH file, a motion capture file format.
-
-- Generation time for 10 animations in batch:  25.99s
-- Average: 2.6 secs
-- Time to Load Model:  23.76s
-- Device: NVIDIA GeForce RTX 4090
-
-Unreal Engine can NOT natively read .BVH files, but Blender can.
-
-Blender is used to convert the .BVH files into .FBX files with the animation baked in.
-
-To import properly into Unreal Engine a dummy skeleton (cube) is attached to the rig in Blender. This way Unreal Engine recognizes the animation as a skeleton aninmation.
-
-The Kimodo skeleton differs from the UE MetaHuman skeleton. For the re-targeting, each chain of bones in the Kimodo rig has to be named after the chains in the UE MetaHuman rig. Some auto-chaining can be used, but it failed more often than it simplified the process.
-
-BUT: After doing the process ONCE for the Kimodo skeleton, it can be used when importing all other .FBX converted animations WITHOUT MANUAL RE-TARGETING!
-
-The animations are than automatically re-targeted using the existing skeleton and exported as rig animation sequences.
-
-These animation sequences have then to be assigned to the MetaHuman skeleton to be able to drive the MetaHuman mesh.
-
-
-26/05/13 - Results with little re-targeted bones and therefore buggy behaviour, first tests of the pipeline:
-![Kimodo 1st Test](../../img/avatar_kimodo_test_250512.gif)
-
-26/05/18 - Results with proper re-targeted bones and (hands and feet need further improvement)
-![Kimodo 1st Test](../../img/avatar_kimodo_test_250518.gif)
-
-#### [NVIDIA ACE](https://developer.nvidia.com/ace-for-games) (Avatar Cloud Engine)
-
-Bit hard for me to fully grasp, but seems to be a complete workflow that does:
-
-1. NLP from voice input
-2. Generate LLM output
-3. Output TTS and drive facial animations using Audio2Face in real-time
-4. Chose and blend between pre-defined animations appropriate to generated answer
-
-#### State of the Art: [DiDiffGes](https://arxiv.org/abs/2503.17059) (2025)
-
-Can generate gestures from speech with just 10 sampling steps.
-Decouples gesture data into body and hand distributions
-
-Claims to be real-time!
-
-Demo: https://cyk990422.github.io/DIDiffGes/
-
-! WAS MERGED WITH ANOTHER PAPER ("HoleGest") INTO ["Efficient-Audio-Gesture"](https://github.com/whuhxb/Efficient-Audio-Gesture)
-
-
-
-#### State of the Art: [AsynFusion](https://arxiv.org/abs/2505.15058) (2025)
-
-Enables paralell generation of facial and body animation, running a syncrhonization between them to relate their dependencies.
-
-Claims to generate more cohesive / "natural" full body animations from a single audio stream.
-
-Does not seem to work in real-time.
-
 
 ## Sending Data
 
@@ -269,12 +159,12 @@ The LiveLink protocol can be used to send data structures from and to Unreal Eng
 OSC (Open Sound Control) as a protocol can be natively used within Unreal Engine to send and recieve any data, does not have to be sound (!). 
 It organizes data using a URL-like address system. Instead of sending a confusing string of numbers, you send a specific value to a specific address.
 
-| Protocol | JSON via LiveLink | OSC (Open Sound Control) |
-| --- | --- | --- |
-| Performance | Moderate (CPU parsing strings) | Better (Parsing binary data) |
-| Ease of Use (Animation) | High. LiveLink maps data directly to skeletal rigs automatically | Low. Have to manually route actions in a(n Animation) Blueprint |
-| Flexibility | Limited mostly to transforms and blendshapes | Virtually endless. Can trigger events, change material colors, spawn particles, etc |
-| Support | Requires custom third-party plugins | Native UE plugin, supported by almost all creative software |
+| Protocol                | JSON via LiveLink                                                | OSC (Open Sound Control)                                                            |
+| ----------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Performance             | Moderate (CPU parsing strings)                                   | Better (Parsing binary data)                                                        |
+| Ease of Use (Animation) | High. LiveLink maps data directly to skeletal rigs automatically | Low. Have to manually route actions in a(n Animation) Blueprint                     |
+| Flexibility             | Limited mostly to transforms and blendshapes                     | Virtually endless. Can trigger events, change material colors, spawn particles, etc |
+| Support                 | Requires custom third-party plugins                              | Native UE plugin, supported by almost all creative software                         |
 
 ## Distorting an Avatar
 
