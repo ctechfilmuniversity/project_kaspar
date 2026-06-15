@@ -10,12 +10,21 @@ nav_order: 8
 
 - [Avatar Animation](#avatar-animation)
   - [File Management](#file-management)
+  - [Pipeline Overview](#pipeline-overview)
   - [Animating an Avatar](#animating-an-avatar)
     - [LiveLink](#livelink)
     - [Pre-Built Animations](#pre-built-animations)
     - [Proceudrally Generating Animations](#proceudrally-generating-animations)
       - [MetaHuman Animator: Audio to Animation](#metahuman-animator-audio-to-animation)
       - [NVIDIA Audio2Face](#nvidia-audio2face)
+        - [Important: UE 5.6 Downgrade](#important-ue-56-downgrade)
+        - [Installed Plugins](#installed-plugins)
+        - [Setup](#setup)
+          - [Face AnimBP (NewAnimInstanceFace)](#face-animbp-newaniminstanceface)
+        - [Editor Settings](#editor-settings)
+        - [Level Blueprint](#level-blueprint)
+        - [Current Limitations](#current-limitations)
+        - [TODO: Real-Time Streaming Audio](#todo-real-time-streaming-audio)
       - [NVIDIA Kimodo - Full-Rig Diffusion Model](#nvidia-kimodo---full-rig-diffusion-model)
         - [First Test with Kimodo -\> Blender for conversion into FBX animation -\> Retargetting in Unreal Engine to MetaHuman](#first-test-with-kimodo---blender-for-conversion-into-fbx-animation---retargetting-in-unreal-engine-to-metahuman)
         - [Further Kimodo Pipeline Tests](#further-kimodo-pipeline-tests)
@@ -31,9 +40,18 @@ nav_order: 8
 
 File Change History:
 
-| Date       | Change        | Author |
-| ---------- | ------------- | ------ |
-| 2026-11-06 | First Version | Malte  |
+| Date       | Change                   | Author |
+| ---------- | ------------------------ | ------ |
+| 2026-11-15 | Added Audio2Face Section | Malte  |
+| 2026-11-06 | First Version            | Malte  |
+
+## Pipeline Overview
+ 
+```
+Kimodo (BVH) → Blender (FBX) → Unreal Engine 5.6 → MetaHuman
+                                                      ├── Body: retargeted animation from Kimodo
+                                                      └── Face: NVIDIA ACE Audio2Face-3D
+```
 
 ## Animating an Avatar
 
@@ -67,6 +85,95 @@ _Lacks a bit of "depth", mostly just mouth movement, not really emotional change
 #### [NVIDIA Audio2Face](https://www.nvidia.com/en-us/omniverse/apps/audio2face.md/)
 
 Is able to generate expressive facial animation from an audio source in real-time
+
+![Audio2Face 1st Test](../../img/260615_AvatarFacialAnimation_Audio2Face_Test.gif)
+
+##### Important: UE 5.6 Downgrade
+
+The NVIDIA Audio2Face Unreal Engine Plugin is not compatible with UE 5.7, therefore a 5.6 downgrade is necessary.
+ 
+The MetaHuman Character Plugin in UE 5.6 breaks the Quixel Bridge link. Legacy MetaHuman assets (e.g. Jesse, Nathalia from the NVIDIA ACE sample project) are no longer downloadable. Any MetaHumans must be created fresh via the **MetaHuman Character Plugin** directly in UE 5.6. The NVIDIA ACE sample project can still be opened for reference but will show missing asset errors which can be safely ignored.
+
+##### Installed Plugins
+ 
+- **NV_ACE_Reference** (core ACE Unreal plugin) — copied to `YourProject/Plugins/`
+- **Audio2Face-3D Models plugin** (local inference models) — copied to `YourProject/Plugins/`
+Local inference requires an **NVIDIA Ampere, Ada, or Blackwell GPU** (RTX 30xx / 40xx / 50xx) with approximately 2.9–4.4 GB VRAM. No server or API key is needed for local execution.
+
+##### Setup
+
+The MetaHuman Character Plugin produces a **single Blueprint** (`BP_TestHuman`) containing both Body and Face as separate Skeletal Mesh components. There is no separate `BP_TestHuman_Face`.
+ 
+**Components panel:**
+- `Body` → `SkeletalMesh`
+- `Face` (+ sub-meshes: Fuzz, Eyebrows, Hair, Eyelashes, Mustache, Beard)
+- `ACEAudioCurveSource` ← added manually, marks this actor as an ACE animation target
+- `MetaHuman`
+- `LODSync`
+**Event Graph:**
+ 
+```
+Event BeginPlay → Animate Character From Sound Wave Async
+                      ├── Character: Self
+                      ├── Sound Wave: [your .wav asset]
+                      ├── A2FProvider Name: "LocalA2F-Mark"
+                      └── (ACEEmotion / Audio2Face Parameters: optional)
+```
+ 
+`ACEAudioCurveSource` requires no Blueprint wiring — its presence on the actor is sufficient for the plugin to identify it as an animation target.
+ 
+###### Face AnimBP (NewAnimInstanceFace)
+ 
+The MetaHuman Character Plugin does not use the shared `Face_AnimBP` from Quixel Bridge. A new Animation Blueprint was created and assigned to the Face component manually.
+ 
+**AnimGraph chain:**
+ 
+```
+Apply ACE Face Animations → mh_arkit_mapping_pose_A2F → Output Pose
+```
+ 
+`Apply ACE Face Animations` receives blendshape curve data from ACE. `mh_arkit_mapping_pose_A2F` translates those curves into MetaHuman facial deformation. This node must come **before** the ARKit pose mapping.
+ 
+##### Editor Settings
+ 
+**Required before testing:**
+ 
+`Edit → Editor Preferences → Level Editor → Miscellaneous`
+→ Disable **"Create New Audio Device for Play in Editor"**
+ 
+Without this, audio playback from ACE will not be heard in the editor.
+ 
+##### Level Blueprint
+ 
+Sets the viewport to a placed `CineCameraActor` on play:
+ 
+```
+Event BeginPlay → Set View Target with Blend
+                      ├── Target: Get Player Controller (index 0)
+                      └── New View Target: CineCameraActor
+```
+
+##### Current Limitations
+ 
+- Audio input is **file-based only** (Sound Wave asset assigned in Blueprint)
+- Provider is set to `LocalA2F-Mark` (v3.0 diffusion model, higher quality). Alternative: `LocalA2F-Mark-AR` (v2.3 regression, lighter on VRAM)
+- No emotion parameters configured (using defaults)
+
+##### TODO: Real-Time Streaming Audio
+ 
+The ACE plugin supports real-time streaming without any Blueprint changes. Switch from file-based to streaming by replacing `Animate Character From Sound Wave Async` with the **streaming variant** of the node, which accepts a continuous audio buffer.
+ 
+For high-load or multi-character scenarios, deploy the **Audio2Face-3D NIM** Docker container locally and point the plugin at it via:
+ 
+`Edit → Project Settings → Plugins → NVIDIA ACE → Default A2F-3D Server Config → Dest URL`
+ 
+Example: `http://localhost:52000`
+ 
+The NIM container image is available on NGC:
+`nvcr.io/nim/nvidia/audio2face-3d:1.3.16`
+ 
+The `ACEAudioCurveSource` component and AnimBP setup remain unchanged for streaming.
+
 
 #### [NVIDIA Kimodo](https://research.nvidia.com/labs/sil/projects/kimodo/) - Full-Rig Diffusion Model
 
