@@ -130,3 +130,97 @@ If WO-A consistently beats WO-C, that tells us to always anchor posture before t
 - - verb anchors the motion type
 - - posture works best when it follows as a natural consequence of that verb
 - describe one sustained motion with the verb, use all remaining words to describe the body's physical state during that exact moment
+
+---
+
+## 260615: Adverb Testing
+
+| Category     | Physical translation                                       | Rating |
+| ------------ | ---------------------------------------------------------- | ------ |
+| Sadly        | Body part + collapsed/drawn inward + "grief/sorrow"        | 9, 3, 8
+| Joyfully     | Body part + open/lifted + "delight/elation"                | 2, 3, 2
+| Frantically  | Limbs + rapid/tense/urgent quality                         | 0, 4, 
+| Languidly    | Limbs + slow/fluid/unhurried/boneless quality              | 1, 4
+| Heavily      | Contact point + sinking/dropping/pressing with full weight | 1, 1
+| Lightly      | Contact point + floating/barely grazing/weightless         | 1, 0
+| Hesitantly   | Contact point + uncertain/faltering/pausing hesitation     | 0, 0
+| Deliberately | Contact point + precise/measured/controlled intention      | (ERROR)
+
+Each descriptor is tailored to the verb's natural body focus — so for the gesture verb it talks about arms and chest, for the collapse it talks about the descent quality, for the walk it talks about foot contact. That should give Kimodo the most grounded concurrent detail to work with rather than a generic tag floating at the end.
+
+<details>
+  <summary>Prompts</summary>
+
+    // V1 — sadly
+    "A person walks on all fours, hands flat on the ground, body low and heavy with grief",
+    // V1 — joyfully
+    "A person walks on all fours, hands flat on the ground, body light and buoyant with excitement",
+    // V1 — frantically
+    "A person walks on all fours, hands flat on the ground, limbs moving in rapid urgent bursts",
+    // V1 — languidly
+    "A person walks on all fours, hands flat on the ground, limbs moving in slow unhurried ease",
+    // V1 — heavily
+    "A person walks on all fours, hands flat on the ground, body sinking with full weight into each step",
+    // V1 — lightly
+    "A person walks on all fours, hands flat on the ground, body barely skimming the surface with each step",
+    // V1 — hesitantly
+    "A person walks on all fours, hands flat on the ground, each limb placed with uncertain pausing hesitation",
+    // V1 — deliberately
+    "A person walks on all fours, hands flat on the ground, each limb placed with precise controlled intention",
+    // V2 — sadly
+    "A person reaches both arms outward toward somebody in front of them, chest collapsed and shoulders drawn inward with sorrow",
+    // V2 — joyfully
+    "A person reaches both arms outward toward somebody in front of them, chest open and lifted with warmth and delight",
+    // V2 — frantically
+    "A person reaches both arms outward toward somebody in front of them, arms moving in rapid tense urgent extension",
+    // V2 — languidly
+    "A person reaches both arms outward toward somebody in front of them, arms drifting in slow fluid unhurried extension",
+    // V2 — heavily
+    "A person reaches both arms outward toward somebody in front of them, arms heavy and dropping under their own full weight",
+    // V2 — lightly
+    "A person reaches both arms outward toward somebody in front of them, arms weightless and floating in gentle extension",
+    // V2 — hesitantly
+    "A person reaches both arms outward toward somebody in front of them, arms extending with trembling uncertain hesitation",
+    // V2 — deliberately
+    "A person reaches both arms outward toward somebody in front of them, arms extending with slow precise controlled intention",
+    // V3 — sadly
+    "A person collapses to the floor and lies still, body folding inward with exhausted grief",
+    // V3 — joyfully
+    "A person collapses to the floor and lies still, body loose and open with relieved elation",
+    // V3 — frantically
+    "A person collapses to the floor and lies still, limbs flailing in sudden uncontrolled rapid descent",
+    // V3 — languidly
+    "A person collapses to the floor and lies still, body slowly melting downward in gradual boneless descent",
+    // V3 — heavily
+    "A person collapses to the floor and lies still, full body weight dropping hard and fast into the ground",
+    // V3 — lightly
+    "A person collapses to the floor and lies still, body floating downward and settling with barely any impact",
+    // V3 — hesitantly
+    "A person collapses to the floor and lies still, body lowering in reluctant halting uncertain stages",
+    // V3 — deliberately
+    "A person collapses to the floor and lies still, body lowering with slow measured controlled intention",
+    // V4 — sadly
+    "A person walks slowly across the stage with arms held out to the sides, chest sunken and head bowed with sorrow",
+    // V4 — joyfully
+    "A person walks slowly across the stage with arms held out to the sides, chest lifted and face raised with open joy",
+    // V4 — frantically
+    "A person walks slowly across the stage with arms held out to the sides, limbs tense and trembling with frantic agitation",
+    // V4 — languidly
+    "A person walks slowly across the stage with arms held out to the sides, limbs loose and drifting in total relaxed ease",
+    // V4 — heavily
+    "A person walks slowly across the stage with arms held out to the sides, each step pressing hard and full into the ground",
+    // V4 — lightly
+    "A person walks slowly across the stage with arms held out to the sides, each step barely grazing the ground with light feet",
+    // V4 — hesitantly
+    "A person walks slowly across the stage with arms held out to the sides, each step placed with faltering uncertain hesitation",
+    // V4 — deliberately
+    "A person walks slowly across the stage with arms held out to the sides, each step placed with slow precise controlled intention"
+  
+</details>
+
+### Results
+
+- "clear" adverbs work best: SAD
+- opposing adverbs break the logic a bit
+- falling through the floor is possible!
+   - possibility for distortions with physics breaking logic? character resets then!
