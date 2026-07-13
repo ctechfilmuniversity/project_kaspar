@@ -13,6 +13,6 @@
 [submodule "kai-temp-website"]
 	path = modules/kai-temp-website
 	url = https://github.com/etlaM21/kai-temp-website.git
-[submodule "modules/kai-avatar-unreal"]
-	path = modules/kai-avatar-unreal
-	url = https://github.com/etlaM21/kai-avatar-unreal
+[submodule "modules/kai-avatar-ue-5.6"]
+	path = modules/kai-avatar-ue-5.6
+	url = https://github.com/etlaM21/kai-avatar-ue-5.6
