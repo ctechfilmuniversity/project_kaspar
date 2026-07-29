@@ -4,9 +4,6 @@
 [submodule "modules/kai-tts"]
 	path = modules/kai-tts
 	url = https://github.com/whatphilipcodes/kai-tts
-[submodule "modules/kai-core"]
-	path = modules/kai-core
-	url = https://github.com/whatphilipcodes/kai-core
 [submodule "modules/kai-avatar-animation"]
 	path = modules/kai-avatar-animation
 	url = https://github.com/etlaM21/kai-avatar-animation
@@ -16,3 +13,9 @@
 [submodule "modules/kai-avatar-ue-5.6"]
 	path = modules/kai-avatar-ue-5.6
 	url = https://github.com/etlaM21/kai-avatar-ue-5.6
+[submodule "modules/kai-shared"]
+	path = modules/kai-shared
+	url = https://github.com/whatphilipcodes/kai-shared
+[submodule "modules/kai-client"]
+	path = modules/kai-client
+	url = https://github.com/whatphilipcodes/kai-client
