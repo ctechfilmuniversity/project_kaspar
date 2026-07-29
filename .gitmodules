@@ -13,9 +13,6 @@
 [submodule "modules/kai-avatar-ue-5.6"]
 	path = modules/kai-avatar-ue-5.6
 	url = https://github.com/etlaM21/kai-avatar-ue-5.6
-[submodule "modules/kai-shared"]
-	path = modules/kai-shared
-	url = https://github.com/whatphilipcodes/kai-shared
 [submodule "modules/kai-client"]
 	path = modules/kai-client
 	url = https://github.com/whatphilipcodes/kai-client
