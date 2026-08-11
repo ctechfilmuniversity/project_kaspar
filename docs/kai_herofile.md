@@ -20,6 +20,7 @@ File Change History:
 
 | Date       | Change                                                                                  | Author |
 | ---------- | --------------------------------------------------------------------------------------- | ------ |
+| 2026-08-11 | LiveLink-native motion ingestion architecture decided for Kimodo/SOMA → MetaHuman       | Malte  |
 | 2026-06-11 | Avatar Animation Pipeline (+ Metrics ) added under new subpage "Layer Avatar Animation" | Malte  |
 | 2026-05-04 | Summary of Avatar Build & Minor Improvements                                            | Malte  |
 | 2026-04-22 | First Version                                                                           | Lena   |
@@ -344,7 +345,7 @@ The Avatar Engine utilizes the [MetaHuman](https://www.metahuman.com) ecosystem 
 **Base architecture:** [MetaHuman](https://www.metahuman.com) in [Unreal Engine](https://www.unrealengine.com/)
 
 **Input:**
-* **Motion capture:** Real-time skeletal and facial data streamed via the **LiveLink** protocol, utilizing sources like the **Live Link Face iOS app**, **camera feed** or **MoCap suits''
+* **Motion capture:** Real-time skeletal and facial data streamed via the **LiveLink** protocol, utilizing sources like the **Live Link Face iOS app**, **camera feed**, **MoCap suits**, or a **custom LiveLink Source** for AI-generated skeletal motion (Kimodo/SOMA)
 * **Face mesh via [FaceBuilder](https://keentools.io/products/facebuilder-for-blender)** or **Photogrammetry** to refine facial geometry and likeness by transfering 2D reference photos to a 3D head mesh, which is then solved into a **MetaHuman Identity**
 
 #### Animations
@@ -352,7 +353,7 @@ The Avatar Engine utilizes the [MetaHuman](https://www.metahuman.com) ecosystem 
 Driving MetaHumans requires a multi-modal approach to balance real-time performance with high-fidelity input
 
 #### Input & Blending
-* **LiveLink:** The standard interface for streaming real-time facial (ARKit), body (MoCap), and camera data directly into Unreal Engine
+* **LiveLink:** The standard interface for streaming real-time facial (ARKit), body (MoCap), and camera data directly into Unreal Engine, including a custom C++ Source built for AI-generated motion (Kimodo/SOMA)
 * **Pre-Built Animations:** Uses UE Blendspaces to interpolate between existing animations
 * **Bottleneck:** Creating a comprehensive library of pre-built animations remains a significant manual labor challenge
 
@@ -364,7 +365,7 @@ Modern pipelines focus on generating expressive movement from audio or text to b
 * **NVIDIA Audio2Face:** Generates highly expressive, AI-driven facial animations from audio sources in real-time
 
 ##### Full-Body & Gestural Generation
-* **NVIDIA Kimodo:** A full-rig diffusion model that generates skeletal animation from text prompts; operates at near real-time (~2–5s) and requires rig retargeting
+* **NVIDIA Kimodo:** A full-rig diffusion model that generates skeletal animation from text prompts; operates at near real-time (~2–5s) and requires rig retargeting — via a custom LiveLink Source + Remap Asset pipeline (see Decision log below)
 * **NVIDIA ACE (Avatar Cloud Engine):** A comprehensive workflow integrating NLP, LLM logic, and automated facial animation drivers
 * **DiDiffGes (SOTA 2025):** Real-time speech-to-gesture generation using an efficient 10-step sampling process
 * **AsynFusion (SOTA 2025):** Synchronizes parallel facial and body animation for natural cohesion, currently limited to non-real-time contexts
@@ -385,7 +386,7 @@ This ensures that the actor's performance and underlying "body language" remain 
 
 | Decision | Options Considered | Chosen Approach | Reasoning | Date |
 | -------- | ------------------ | --------------- | --------- | ---- |
-|          |                    |                 |           |      |
+| Motion ingestion architecture for Kimodo/SOMA → MetaHuman | (a) Blueprint OSC parsing → Control Rig → hidden Dummy mesh → IK Retargeter (original approach); (b) Custom C++ LiveLink Source → Remap Asset → MetaHuman AnimBP directly | (b) — LiveLink-native pipeline | The Blueprint/Control Rig/Dummy chain didn't generalize: axis swizzles were hardcoded per-dataset and rest-pose offsets were manual. A LiveLink Source publishing the raw source skeleton (not baked to MetaHuman names) is reusable for any future OSC-based mocap source without recompiling C++; target-specific mapping and rest-pose offsets move into an editable Remap Asset / data table instead. Trade-off accepted: the IK Retargeter's chain-based solve is gone, so rest-pose/offset authoring is still manual work, just relocated. | 2026-08-11 |
 
 
 

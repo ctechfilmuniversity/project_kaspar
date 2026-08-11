@@ -10,7 +10,13 @@ nav_order: 8
 
 - [Avatar Animation](#avatar-animation)
   - [File Management](#file-management)
-  - [Pipeline Overview](#pipeline-overview)
+  - [Pipeline Overview v2](#pipeline-overview-v2)
+    - [26/08/11: Testing showed the need to implement a native BVH reader to update the MetaHuman from the Animation Data sent](#260811-testing-showed-the-need-to-implement-a-native-bvh-reader-to-update-the-metahuman-from-the-animation-data-sent)
+      - [Motion Capture Pipeline: LiveLink-Native Architecture (replaces Dummy + IK Retargeter)](#motion-capture-pipeline-livelink-native-architecture-replaces-dummy--ik-retargeter)
+        - [Components](#components)
+        - [Known trade-off (accepted)](#known-trade-off-accepted)
+        - [Next step](#next-step)
+  - [Pipeline Overview v1](#pipeline-overview-v1)
   - [Animating an Avatar](#animating-an-avatar)
     - [LiveLink](#livelink)
     - [Pre-Built Animations](#pre-built-animations)
@@ -30,6 +36,7 @@ nav_order: 8
         - [Further Kimodo Pipeline Tests](#further-kimodo-pipeline-tests)
           - [Pipeline Time Measurements](#pipeline-time-measurements)
           - [Prompt Engineering](#prompt-engineering)
+      - [NVIDIA ARDY (newest state of the art - 26/08/11)](#nvidia-ardy-newest-state-of-the-art---260811)
       - [NVIDIA ACE (Avatar Cloud Engine)](#nvidia-ace-avatar-cloud-engine)
       - [State of the Art: DiDiffGes (2025)](#state-of-the-art-didiffges-2025)
       - [State of the Art: AsynFusion (2025)](#state-of-the-art-asynfusion-2025)
@@ -40,12 +47,56 @@ nav_order: 8
 
 File Change History:
 
-| Date       | Change                   | Author |
-| ---------- | ------------------------ | ------ |
-| 2026-11-15 | Added Audio2Face Section | Malte  |
-| 2026-11-06 | First Version            | Malte  |
+| Date       | Change                     | Author |
+| ---------- | -------------------------- | ------ |
+| 2026-08-11 | Updated plan after Testing | Malte  |
+| 2026-06-15 | Added Audio2Face Section   | Malte  |
+| 2026-06-11 | First Version              | Malte  |
 
-## Pipeline Overview
+
+## Pipeline Overview v2
+ 
+```
+Python (SOMA/Kimodo or newest: ARDY)
+  → OSC/UDP
+  → C++ LiveLink Source (background thread: parse + axis-swizzle)
+  → LiveLink Client (built-in)
+  → Remap Asset (bone-name mapping + rest-pose offsets)
+  → MetaHuman AnimBP (LiveLink Pose node)
+```
+
+### 26/08/11: Testing showed the need to implement a native BVH reader to update the MetaHuman from the Animation Data sent
+
+Here's the plan in doc-ready form:
+
+---
+
+#### Motion Capture Pipeline: LiveLink-Native Architecture (replaces Dummy + IK Retargeter)
+
+**Why:** The current Blueprint-OSC-ingestion → Control Rig → hidden Dummy mesh → IK Retargeter chain is tedious to extend to new data (hardcoded axis swizzles, manual rest-pose offsets, mismatched hierarchies). Moving ingestion into a proper LiveLink Source makes the pipeline reusable for any future OSC-based mocap source, not just SOMA.
+
+**Decision:** Going with the fully LiveLink-native route (no Dummy mesh, no IK Retargeter) rather than a hybrid that keeps the IK Retargeter downstream.
+
+##### Components
+
+| Part | Role | Why this way |
+|---|---|---|
+| **Python inference** | Unchanged — SOMA/Kimodo ( or streaming Data with [NVIDIA ARDY](#nvidia-ardy-newest-state-of-the-art---260811)) outputs per-bone quaternions over OSC | No change needed; a Python-side LiveLink provider was considered and ruled out — the real `ILiveLinkProvider` path requires linking UE's C++ modules, not a reimplementable wire protocol |
+| **OSC transport** | Unchanged | Already working; no reason to swap. (VMC protocol is the closest thing to a real standard here if multi-source interop is ever needed, but not required for SOMA) |
+| **C++ LiveLink Source** (`ILiveLinkSource` + background `FRunnable`) | Listens for OSC off the game thread; parses packets; applies the axis-swizzle; pushes `FLiveLinkSkeletonStaticData` (SOMA's own bone names/hierarchy, once) and `FLiveLinkAnimationFrameData` (swizzled local-space transforms, every frame) | Background thread keeps parsing/math off the render-critical game thread. Swizzle happens here — once per subject per frame, before LiveLink's internal interpolation, so slerping between frames stays mathematically consistent. **Publishes SOMA's raw bone names, not MetaHuman names** — keeps the plugin reusable for any future skeleton/hardware without recompiling |
+| **LiveLink Client** | Built into the engine — buffers/interpolates by timestamp, exposes the subject to any consumer | Nothing to build; this is the payoff for writing a real Source instead of a Blueprint hack |
+| **Remap Asset** (`ULiveLinkRetargetAsset`/`ULiveLinkRemapAsset` subclass, driven by a `UDataTable`: `SourceBoneName / TargetBoneName / RestPoseOffset`) | Per frame: looks up SOMA name → MetaHuman name, composes the rest-pose delta quaternion (`REST_Quat × OSC_Quat`) | Target-specific logic lives here, not in C++ — editable per character without a rebuild. Same reasoning as the Source split: new character or body variant = new data table, not new code |
+| **MetaHuman AnimBP** | `LiveLink Pose` node, pointed at the subject, with the Remap Asset assigned | Replaces Control Rig + Dummy mesh + IK Retargeter entirely |
+
+##### Known trade-off (accepted)
+
+The IK Retargeter did chain-based FK/IK solving with an explicit retarget pose, handling bone-count/proportion mismatches structurally. The Remap Asset does straight per-bone rotation copy — no automatic chain solve. This means rest-pose/offset authoring is still manual work, just relocated from a hardcoded Python script into an editable data table instead of gone entirely.
+
+##### Next step
+
+Build the `ILiveLinkSource`/`SourceFactory` C++ and the Remap Asset + `UDataTable` row struct.
+
+## Pipeline Overview v1
  
 ```
 Kimodo (BVH) → Blender (FBX) → Unreal Engine 5.6 → MetaHuman
@@ -262,6 +313,14 @@ Testing how verb and posture order (in prompt) affects generation
 - Colon-separated, fitness-class style instructions completely break the generation.
 - Transition Weakness: The model struggles to process sequential actions (e.g., "bend down, then walk"). If a transition is absolutely necessary, the final, sustained motion must be described with disproportionately high detail to ensure the clip resolves correctly.
 - Action-Specific Vocabulary: Simple, universally understood verbs ("collapses", "walks") outperform synonyms with nuanced physical implications ("sinks", "strides") when the surrounding prompt is complex.
+
+
+#### [NVIDIA ARDY](https://research.nvidia.com/labs/sil/projects/ardy/) (newest state of the art - 26/08/11)
+
+**ARDY is basibally a real-time KIMODO implementation**
+
+- ARDY *streams motion data* instead of generating per prompt
+- perfect for our use case + usses same system as KIMODO (SOMA Body Model, BONES dataset etc.)
 
 
 #### [NVIDIA ACE](https://developer.nvidia.com/ace-for-games) (Avatar Cloud Engine)
