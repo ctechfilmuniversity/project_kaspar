@@ -16,3 +16,6 @@
 [submodule "modules/kai-client"]
 	path = modules/kai-client
 	url = https://github.com/whatphilipcodes/kai-client
+[submodule "modules/kai-bench"]
+	path = modules/kai-bench
+	url = https://github.com/whatphilipcodes/kai-bench
