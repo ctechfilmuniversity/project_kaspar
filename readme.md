@@ -20,7 +20,13 @@ cd ./modules && git submodule add https://github.com/username/repo
 When cloning the parent repository (this repo), submodules will show up as empty directories. To acutally clone all submodules run the following commands after cloning:
 
 ```sh
-git submodule init && git submodule update
+git submodule update --init --recursive
+```
+
+Updates all submodules to the latest commit on their respective remote tracking branches (best to run this after every pull):
+
+```sh
+git submodule update --recursive --remote
 ```
 
 To remove a submodule if it is no longer used run the following commands:
