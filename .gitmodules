@@ -16,6 +16,6 @@
 [submodule "modules/kai-bench"]
 	path = modules/kai-bench
 	url = https://github.com/whatphilipcodes/kai-bench
-[submodule "modules/kai-avatr-ue-5.8"]
-	path = modules/kai-avatr-ue-5.8
+[submodule "modules/kai-avatar-ue-5.8"]
+	path = modules/kai-avatar-ue-5.8
 	url = https://github.com/etlaM21/kai-avatar-ue-5.8.git
