@@ -54,7 +54,6 @@ Cloning (Malte)
 
 ### 2026-11-15
 
-
 Full pipeline tests (Philip)
 - [ ] Realtime Goal Eval (compute resources sufficient?)
 
@@ -62,3 +61,38 @@ Marry both pipelines (Malte)
 - [ ] Drive face from TTS
 - [ ] Generate motion from LLM
 - [ ] Orchestrate distortions from LLM / GUI -> "Temperature" slider to change AI involvement
+
+### 2026-12-01
+
+Finetuning (Malte)
+- [ ] Improve mirroring
+- [ ] Improve prompting for motion generation
+- [ ] Improve distortion layer
+- [ ] Test and iterate on the cloning process
+
+Switch to real-world application (Malte)
+- [ ] Plan actual setup in workshops
+- [ ] Test connectivity and data transfer
+- [ ] Plan data collection methods and legal stuff
+
+### 2026-12-15
+
+Bugfixing (Malte)
+- [ ] Mirroring
+- [ ] Motion Generation
+- [ ] Unreal Engine
+- [ ] GUIs
+
+Build the actual setup (Malte)
+- [ ] Monitor
+- [ ] Camera
+- [ ] HCI
+- [ ] Data collection
+
+### 2027-01-01
+
+Test the workshop setup (Malte)
+- [ ] Data transfer
+- [ ] Data collection
+- [ ] Hardware
+- [ ] Acessibility
