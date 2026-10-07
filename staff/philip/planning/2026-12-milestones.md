@@ -3,8 +3,8 @@ Shifting the architecture towards more flexibility by utilizing docker images ho
 
 ### 2026-10-01
 LLM Backend API endpoint running
-- [ ] vLLM hosting LLM backbone
-- [ ] custom optimized docker image for reproducibility (open source)
+- [x] vLLM hosting LLM backbone
+- [x] custom optimized docker image for reproducibility (open source, derived from [eugr](https://github.com/eugr/spark-vllm-docker))
 
 ### 2026-10-15
 ASR (STT) + TSS endpoints running
