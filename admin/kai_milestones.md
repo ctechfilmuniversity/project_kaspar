@@ -1,9 +1,39 @@
 # Kai Development Milestones
 
+![Architecture as of 26/10/22](./261022_architecture.jpg)
+
 ## January Seminar and Event
 
-### Overall
+### Features Needed For Seminar
 
+- [ ] Orchestrator Program with GUI
+  - [ ] Server-side implementation
+  - [ ] Paramterize blend of individual limbs between tracking and mirroring
+  - [ ] Animation Sequencer / Prompt Injection for procedural animations
+- [ ] Cloning Process
+  - [ ] Automate Visual Cloning (Best Case: Full MetaHuman - Worst Case: Just Facetexture)
+  - [ ] Automate Voice Cloning
+  - [ ] Build GUI with "setup story" which playfully extracts information needed from user
+- [ ] Improve ASR module (Philip)
+- [ ] Loop Kimodo animations seamlessly (Malte)
+- [ ] Audio2Face in Unreal Engine (Malte)
+- [ ] Overall Storyline for seminar
+- [ ] Test Prompting capabilites of current LLM (Philip / Malte)
+
+#### Open Questions
+
+Some open questions are to be answered with the seminar people potentially.
+
+- How many people can be cloned? How many machines are in use?
+- How is the MetaHuman displayed? One vertical monitor?
+- Where does the input signal come from? Camera, microphone needs to be specified
+- How does the LLM decide what animation to prompt?
+- Should the LLM autonomously decide the blending and future distortions?
+- How can animations be stored in the future (sequencing)? As animation files or prompt lists with seeds?
+- How should errors be handled? Limbs flying off etc
+
+
+### Overall
 
 * Shifting the architecture towards more flexibility by utilizing docker images hosting APIs orchestrated by a client application (Philip)
 
@@ -28,15 +58,15 @@ ASR (STT) + TSS endpoints running (Philip)
 - [ ] TTS endpoint running
 
 Unified GUI for sending and recieving data to external machine used to generate motion capture data via Kimodo (Malte)
-- [ ] Establish remote connection and stream data via tailscale
-- [ ] Send data to Unreal Engine simultanously, establish two LiveLink subjects
+- [x] Establish remote connection and stream data via tailscale
+- [X] Send data to Unreal Engine simultanously, establish two LiveLink subjects
 
 Simple distortion controller in UE (Malte)
-- [ ] Blend between mirrored and generated motion
+- [x] Blend between mirrored and generated motion
 - [ ] Distort rig via ControlRig, data distortion and / or vertex shader
 
 Improve motion (Malte)
-- [ ] Mirroring: X Y Position translation, optionally locked in place
+- [x] Mirroring: X Y Position translation, optionally locked in place
 - [ ] Mirroring: Test infrared footage
 - [ ] Kimodo: Loop generation, idle positions -> inifinite data stream / ALTERNATIVELY: check Ardy state for usability and potentially switch
 
