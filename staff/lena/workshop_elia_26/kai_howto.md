@@ -37,7 +37,7 @@ TTS beenden (QUESTION: muss das vor dem Start des Avatar Systems passieren?)
 Starten
 * Desktop-Icon `avatar_animation_spark` starten
 * Anschließend Unreal und folgende Datei öffnen:
-    * Desktop → `project_kaspar` → `KaiTracking`
+    * Desktop → `project_kaspar` → `modules` → `kai-avatar-ue-5.8` → `KaiTracking` (QUESTION: ist das die richtige Datei? Ich musste den Pfad erst suchen, hatte den nicht korrekt aufgeschrieben)
 * Die UI öffnet sich
 
 UI
