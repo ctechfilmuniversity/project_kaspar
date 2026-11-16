@@ -55,8 +55,17 @@ Unreal
 * Tab `Live Link` (unten rechts)
     * Statusanzeige, z. B. Verbindung zur UI
 
+
+## VIDEOS
+
+**TODO Malte, Philip:**
+
+Hier bitte die Aufnahmen von "Misuse" verlinken, die ich zeigen könnte, falls das Live System nicht funktionieren sollte.
+
+
+
 ## TODOS
 
 * Philip: How-to für Lena, wie man eine andere Stimme verwenden kann, inkl. Aufnahme vor Ort
-* Philip: Audio-Beispiele für Misuse
+* Philip: Audio-Beispiele für Misuse (s.o. VIDEOS)
 * Lena: externe Webcam
