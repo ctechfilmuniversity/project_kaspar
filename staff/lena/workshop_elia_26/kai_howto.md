@@ -10,13 +10,14 @@ Voraussetzungen
 ### SPEECH
 
 Einstellungen (vor dem Start)
-* `System` → `Sound` → `Input` → `Choose device...` → `Microphone Array on...` (passenden Adapter auswählen)
+* `Settings` → `System` → `Sound` → `Input` → `Choose device...` → `Microphone Array on...` (passenden Adapter auswählen)
     * Muss **vor** dem Starten eingestellt sein, sonst wird das Mikrofon nicht erkannt.
 
 Spark starten
 * Spark verkabeln (Strom, Ethernet) und einschalten
 * Prüfen, ob die Verbindung steht:
     * Desktop-Verknüpfung `Status Spark Link` öffnen (öffnet eine Webseite) → `spark-001` muss `Connected` anzeigen
+        * ERROR: tailscale fragt nach einem Login
     * ODER in der PowerShell `ssh spark` eingeben, dann:
         * `btop` – Übersicht über laufende Prozesse
         * `docker container ls` – zeigt den Ladestatus der einzelnen Container
