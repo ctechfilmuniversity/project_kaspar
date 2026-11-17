@@ -107,10 +107,11 @@ Zwei Tabs ganz oben: *Mirroring* / *Prompting*
 
 Unreal
 * `Play` drücken
-* `BP_NewMetaHumanCharacter` → Settings
-    * `LL Pose Blend`: linearer Wert zwischen Mirroring (Nachahmen der Kamera-Bewegung) und Prompt
 * Tab `Live Link` (unten rechts)
     * Statusanzeige, z. B. Verbindung zur UI
+* `UI Slider`, lineare Interpolation zwischen Mirroring Modus (Kamera-Track)  und Generierter Bewegung von Kimodo
+  * ALTERNATIV: Im Outliner auf `BP_NewMetaHumanCharacter` → Settings
+    * `LL Pose Blend`: linearer Wert zwischen Mirroring (Nachahmen der Kamera-Bewegung) und Prompt
 
 ## VIDEOS
 
