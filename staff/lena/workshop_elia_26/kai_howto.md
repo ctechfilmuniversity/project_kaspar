@@ -23,7 +23,7 @@ Spark starten
         * `docker container ls` – zeigt den Ladestatus der einzelnen Container
 
 Ausführen
-* `kai-demi-s2s.exe` starten – der Start dauert 10–15 Minuten
+* `kai-demo-s2s.exe` starten – der Start dauert 10–15 Minuten
     * Im Shell-Fenster warten, bis `All Containers are Healthy and Running` erscheint
 * Die erste Sprachausgabe braucht einen Moment, danach läuft es flüssiger.
 
@@ -31,6 +31,38 @@ TTS beenden (QUESTION: muss das vor dem Start des Avatar Systems passieren?)
 * `ssh spark`
 * `cd serv`
 * `docker compose down`
+
+---
+
+### Manual Voice Cloning
+
+1. Get a recording of the target voice reading out a reference text (`assets/voices/ref-long.txt` or `assets/voices/ref-short.txt`). The clip should be 10-20 seconds long, ideally recorded with medium to high quality (i.e. NOT recorded on the integrated microphone array on the Alienware as the recording dictates the quality of the voice clone). The file needs to be of the following format:
+    
+    ```
+    Waveform audio (.wav)
+    Audio Channels: Mono
+    Sample Rate: 48kHz
+    Bits per Sample: 16
+    ```
+    *To convert into the correct format, a tool like [Audacity](https://www.audacityteam.org/) (free download) might come in handy.*
+
+2. Place the recording in `assets/voices/source-<name>.wav`. Then edit `config.toml` to use the new file in the clients requests:
+
+    ```toml
+    [tts]
+    (...)
+    ref_audio = "assets/voices/source-<name>.wav"
+    ref_text = "assets/voices/ref-<long|short>.txt"
+    (...)
+    ```
+    *Make sure to pass the same reference text used in the recording to `ref_text`.*
+
+3. Restart the client application by closing it if already running and then either via the Desktop shortcut or in a terminal using:
+    ```sh
+    cd <repository root>
+    uv run kai-client
+    ```
+---
 
 ### AVATAR
 
@@ -59,14 +91,45 @@ Unreal
 
 ## VIDEOS
 
-**TODO Malte, Philip:**
+**TODO Malte:**
 
 Hier bitte die Aufnahmen von "Misuse" verlinken, die ich zeigen könnte, falls das Live System nicht funktionieren sollte.
 
+---
 
+### Speech to Speech
+
+`System Prompt`
+```
+Du bist Kaspar Hauser in einem historischen Theaterstück um 1830. Antworte ausschließlich in direkter Rede auf das Gesagte. Sprich wie ein Mensch, der in einer kleinen Kammer aufgewachsen ist und erst seit Kurzem unter Menschen lebt: Benutze einen sehr einfachen Wortschatz, ganz normale Alltagsbegriffe und kurze, gerade Sätze. Nimm Dinge, die dein Gegenüber sagt, sachlich und direkt, ohne philosophische Sätze, ohne Vergleiche mit Licht oder Zeit, und ohne künstliche Rätselhaftigkeit. Klinge einfach wie ein junger Mann, der lernt zu sprechen.
+```
+
+Im Folgenden wurden verschiedene Konfigurationen für das LLM verwendet, um die Standardeinstellungen mit gezielt kreativen Auswüchsen und fragmentierte Antworten zu vergleichen:
+
+#### Default
+Empfohlene Einstellungen für `gemma-4-26B-A4B`.
+
+- [`Ilja` System Prompt Alignment](https://drive.google.com/file/d/1gukBG7bu0t36o0UhMx0qMGjAiAq2rVmK/view?usp=drive_link)<br>
+*Trotz des wiederholten Ansprechens von Autos (welche durch die zeitliche Eingrenzung des System Prompts dem Agenten unbekannt sein sollten) bleibt ein plötzlicher Kontext-Drift aus.*
+- [`Ilja` Sprachverständnis](https://drive.google.com/file/d/1Yc2U_8Ow323wbx_EPNs6VhTU4Bgpj9JQ/view?usp=drive_link)<br>
+*Der Versuch, dem Agenten ein neues Wort in der laufenden Session beizubringen.*
+
+#### Creative
+Einstellungen für ausschweifendere und fehlerhafte Antworten des Agenten ohne gänzlich aus der Konversation auszubrechen (hohe Temperatur)
+
+- [`Philip` Ein Ei und Brot](https://drive.google.com/file/d/13aMJQXqykSvmPKGT-_KL-rUC8eEz0cn6/view?usp=drive_link)<br>
+*Zeigt frakturiertere Antworten, die sich jedoch trotzdem spürbar am Thema Hunger und Nahrung orientieren.*
+- [`Philip` K.ai oder Kaspar](https://drive.google.com/file/d/1jn262B1ivmAV8NkH0v6pRHJ3Xm5V7yYP/view?usp=drive_link)<br>
+*Eine etwas längere Version wieder mit dem Versuch, ein neues Wort beizubringen.*
+
+#### Intentionally Distorted
+Ähnlich zu *Creative* mit `top_k`-Parameter auf `0`. Dadurch wird die Begrenzung auf die wahrscheinlichsten Tokens aufgehoben und das gesamte Vokabular ist wählbar, was zu Ausschweifungen in zufälligen Sprachen und Wortfragmenten führt.
+
+- [`Philip` Brot im Chaos](https://drive.google.com/file/d/1Dqc1NMXaLYaVx1EbnrO1uN4qiYxzQJGB/view?usp=drive_link)<br>
+*Relativ chaotischer Wortbrei, der aber auf sehr direkte Instruktionen trotzdem eingeht (Sag mir genau ein Wort).*
+- [`Ilja` Fragmente](https://drive.google.com/file/d/1SFfE0R2ucXE39tj5M3Jz01HC5rLuNbSz/view?usp=drive_link)<br>
+*Keine kohärente Interaktion, verständliche Teile beschränken sich auf einzelne Satzfragmente.*
 
 ## TODOS
 
-* Philip: How-to für Lena, wie man eine andere Stimme verwenden kann, inkl. Aufnahme vor Ort
-* Philip: Audio-Beispiele für Misuse (s.o. VIDEOS)
 * Lena: externe Webcam
