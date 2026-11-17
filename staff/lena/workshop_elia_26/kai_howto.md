@@ -74,20 +74,36 @@ Voraussetzungen
 
 ## AVATAR
 
-Starten
-* Desktop-Icon `avatar_animation_spark` starten
-* Anschließend Unreal und folgende Datei öffnen:
-    * Desktop → `project_kaspar` → `modules` → `kai-avatar-ue-5.8` → `KaiTracking` (QUESTION: ist das die richtige Datei? Ich musste den Pfad erst suchen, hatte den nicht korrekt aufgeschrieben)
-* Die UI öffnet sich
+### Starten
+1. Desktop-Icon `avatar_animation_spark` starten
+2. Anschließend Unreal und folgende Datei öffnen:
+    * Desktop → `project_kaspar` → `modules` → `kai-avatar-ue-5.8` → `KaiTracking.uproject` 
+3. Nachdem der Spark Server gestartet ist, öffnet sich die GUI vom K.ai Tracking / Prompting Tool
 
-UI
+### Tool UI
+Zwei Tabs ganz oben: *Mirroring* / *Prompting*
+* Ganz unten: Statusanzeige ob Tracking und / oder Prompting an Unreal Engine Daten sendet
+
+### MIRRORING:
+* Oben links: Auswahl der Webcam, benötigt Restart (also Start- und Stopp-Knopf nochmal drücken)
 * Rechts unten auf den `Start` Button klicken
     * `Smoothing`: 0 = direkte Übertragung der Bewegung, 1 = Interpolation (weicher, weniger Fehler, aber mehr Latenz)
     * `Calibrate`: legt den Nullpunkt (Ausgangsposition) fest
-* Alle Prompts müssen auf Englisch mit „a person …“ beginnen
 
-Empfehlungen
+### PROMPTING:
+* Alle Prompts müssen auf Englisch mit „a person …“ beginnen
 * Prompts mit Adjektiven anreichern, um die Bewegung genauer zu beschreiben
+* Bewegung direkt und explizit beschreiben, ohne (zu) poetische Formulierungen
+  - "A person walks on all fours, hands flat on the ground, body low and heavy with grief."
+* Verb zuerst, direkt gefolgt von der Haltung als Folge
+  - "A person falls forward, dropping onto all fours with hands flat on the ground."
+#### Prompting UI
+* Oben: **Aktuell laufender Prompt**
+* Mitte: **Derzeitige Queue mit folgenden Prompts**
+* Unten: **Session History** mit anklickbaren Prompts für die Queue
+* Rechts: **Settings**: Step-Count zB interessant um Qualität der Animationen zu senken / steigern, Loop an oder aus
+* Rechts unten: **Local Animation History** mit anklickbaren Prompts aus allen Sessions
+
 
 Unreal
 * `Play` drücken
@@ -98,9 +114,7 @@ Unreal
 
 ## VIDEOS
 
-**TODO Malte:**
-
-Hier bitte die Aufnahmen von "Misuse" verlinken, die ich zeigen könnte, falls das Live System nicht funktionieren sollte.
+[K.ai Mirroring Stresstest / Failvideos: https://drive.google.com/file/d/1Lx2PB_565Kc8QwVdYF8ygmX9FHGlA6Tx/view?usp=sharing](https://drive.google.com/file/d/1Lx2PB_565Kc8QwVdYF8ygmX9FHGlA6Tx/view?usp=sharing)
 
 ### Speech to Speech
 
