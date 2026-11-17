@@ -7,32 +7,41 @@ Voraussetzungen
 
 > **Wichtig:** Den ersten Start vor dem Workshop durchführen und dafür ca. 15 Minuten einplanen. Dann mit dem laufenden System in den Workshop gehen.
 
-### SPEECH
+## SPEECH
 
-Einstellungen (vor dem Start)
+### 0. Einstellungen (vor dem Start)
 * `Settings` → `System` → `Sound` → `Input` → `Choose device...` → `Microphone Array on...` (passenden Adapter auswählen)
     * Muss **vor** dem Starten eingestellt sein, sonst wird das Mikrofon nicht erkannt.
 
-Spark starten
-* Spark verkabeln (Strom, Ethernet) und einschalten
+### 1. Spark starten
+* Spark verkabeln (Strom, Ethernet) und einschalten (Grüne Status-LED leuchtet)
+  * Wenn möglich, Spark an Ethernet-Anschluss der Venue bringen
+    * Alternativ, Ethernet via Adapter an Alienware anschließen
+  * Alienware mit dortigem WLAN verbinden
 * Prüfen, ob die Verbindung steht:
-    * Desktop-Verknüpfung `Status Spark Link` öffnen (öffnet eine Webseite) → `spark-001` muss `Connected` anzeigen
-        * ERROR: tailscale fragt nach einem Login
-    * ODER in der PowerShell `ssh spark` eingeben, dann:
-        * `btop` – Übersicht über laufende Prozesse
-        * `docker container ls` – zeigt den Ladestatus der einzelnen Container
+  * In PowerShell
+    * `tailscale status` eingeben. Output sollte für spark-001 online status zeigen:
+         ```sh
+         (...)
+         100.83.6.8  spark-001    whatphilipcodes@   linux   online
+         (...)
+         ```
+    * `ssh spark` eingeben, dann
+      * `ping google.com` (bei keine Antwort oder Timeout hat der Spark keinen Internetzugang und Speech-to-Speech wird nicht funktionieren)
+      * `btop` – Übersicht über laufende Prozesse
+      * `docker container ls` – zeigt den Ladestatus der einzelnen Container
 
-Ausführen
+### 2. Ausführen
 * `kai-demo-s2s.exe` starten – der Start dauert 10–15 Minuten
     * Im Shell-Fenster warten, bis `All Containers are Healthy and Running` erscheint
 * Die erste Sprachausgabe braucht einen Moment, danach läuft es flüssiger.
 
-TTS beenden (QUESTION: muss das vor dem Start des Avatar Systems passieren?)
-* `ssh spark`
-* `cd serv`
-* `docker compose down`
-
----
+### 3. Beenden
+* TTS beenden BEVOR Avatar-System gestartet wird
+* In Powershell:
+  1. `ssh spark`
+  2. `cd serv`
+  3. `docker compose down` (dauert bis zu 2 min)
 
 ### Manual Voice Cloning
 
@@ -62,9 +71,8 @@ TTS beenden (QUESTION: muss das vor dem Start des Avatar Systems passieren?)
     cd <repository root>
     uv run kai-client
     ```
----
 
-### AVATAR
+## AVATAR
 
 Starten
 * Desktop-Icon `avatar_animation_spark` starten
@@ -88,14 +96,11 @@ Unreal
 * Tab `Live Link` (unten rechts)
     * Statusanzeige, z. B. Verbindung zur UI
 
-
 ## VIDEOS
 
 **TODO Malte:**
 
 Hier bitte die Aufnahmen von "Misuse" verlinken, die ich zeigen könnte, falls das Live System nicht funktionieren sollte.
-
----
 
 ### Speech to Speech
 
