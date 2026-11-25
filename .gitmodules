@@ -16,3 +16,6 @@
 [submodule "modules/kai-server"]
 	path = modules/kai-server
 	url = https://github.com/whatphilipcodes/kai-server.git
+[submodule "modules/kai-avatar-setup"]
+	path = modules/kai-avatar-setup
+	url = https://github.com/etlaM21/kai-avatar-setup.git
